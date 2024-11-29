@@ -26,63 +26,11 @@ import {
 function App(): React.JSX.Element {
   const [held, setHeld] = useState(false);
   const [pressed, setPressed] = useState(false);
-  // const [hasDraggedOut, setHasDraggedOut] = useState(false);
-  // const buttonRef = useRef<any>(null);
 
-  // const panResponder = PanResponder.create({
-  //   onStartShouldSetPanResponder: () => {
-  //     console.log("ran")
-  //     return true
-  //   },
-  //   onPanResponderGrant: () => {
-  //     setPressed(true);
-  //     setHasDraggedOut(false);
-  //   },
-  //   onPanResponderMove: (evt, gestureState) => {
-  //     console.log('Triggered');
-  //     buttonRef.current.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-  //       console.log('Button Bounds:', { x, y, width, height, pageX, pageY });
-
-  //       const { moveX, moveY } = gestureState;
-
-  //       // Check if the finger is outside the button bounds
-  //       if (
-  //         moveX < pageX || moveX > pageX + width ||
-  //         moveY < pageY || moveY > pageY + height
-  //       ) {
-  //         setHasDraggedOut(true);
-  //       } else {
-  //         setHasDraggedOut(false);
-  //       }
-  //     });
-  //   },
-  //   onPanResponderRelease: () => {
-  //     setPressed(false);
-  //     setHasDraggedOut(false);
-  //   },
-  // });
-
-  const opacityValue1 = useRef(new Animated.Value(1)).current;
-  const opacityValue2 = useRef(new Animated.Value(0)).current;
-  const opacityValue3 = useRef(new Animated.Value(0)).current;
-
-  // red: rgb(234, 197. 191)
-  // neutral: rgb(230, 237, 246)
-  const red = useRef(new Animated.Value(0)).current;
-  const rInter = red.interpolate({
-    inputRange: [0, 1],
-    outputRange: [230, 234]
-  })
-  const green = useRef(new Animated.Value(0)).current;
-  const gInter = green.interpolate({
-    inputRange: [0, 1],
-    outputRange: [237, 197]
-  })
-  const blue = useRef(new Animated.Value(0)).current;
-  const bInter = blue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [246, 191]
-  })
+  const initialBtn = useRef(new Animated.Value(1)).current;
+  const activeShadow = useRef(new Animated.Value(0)).current;
+  const activeRunningShadow = useRef(new Animated.Value(0)).current;
+  const runningShadow = useRef(new Animated.Value(0)).current;
 
   const bg = useRef(new Animated.Value(0)).current;
   const bgInter = bg.interpolate({
@@ -91,57 +39,22 @@ function App(): React.JSX.Element {
   })
   const [bgColor, setBgColor] = useState(bgInter)
 
-
-  // useEffect(() => {
-  //   const listenerId = bg.addListener((value) => {
-  //     console.log('Animated Value:', value.value); // Access the current value
-  //     setBgColor(bgInter)
-  //   });
-
-  //   return () => bg.removeListener(listenerId); // Cleanup on unmount
-  // }, []);
-
-  // const handleColorChange = () => {
-  //   Animated.parallel([
-  //     Animated.timing(red, {
-  //       toValue: 1,
-  //       duration: DURATION,
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(green, {
-  //       toValue: 1,
-  //       duration: DURATION,
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(blue, {
-  //       toValue: 1,
-  //       duration: DURATION,
-  //       useNativeDriver: true,
-  //     })
-  //   ]).start();
-  // }
-
-  // const handleActivate = () => {
-  //   Animated.timing(bg, {
-  //     toValue: 1,
-  //     duration: DURATION,
-  //     useNativeDriver: true,
-  //   })
-  // }
-
-
   const scale = useRef(new Animated.Value(1.06)).current;
 
   const DURATION = 1000;
 
-  const handleFadeIn = () => {
-    // if (held) {
-    //   console.log(held);
-    //   handleFadeOut(pressed);
-    //   setHeld(false);
-    //   return;
-    // }
-    Animated.timing(opacityValue1, {
+  const handleFadeIn = (bool?: boolean) => {
+    console.log(held, pressed)
+
+    if (held && pressed) {
+      handleFadeOut(pressed);
+      return;
+    }
+
+    console.log(held);
+    // const el = pressed ? runningShadow : bool ? runningShadow : activeShadow
+    const el = pressed ? runningShadow : activeShadow
+    Animated.timing(initialBtn, {
       toValue: 0,
       duration: DURATION,
       useNativeDriver: true,
@@ -154,8 +67,9 @@ function App(): React.JSX.Element {
           duration: DURATION,
           useNativeDriver: true,
         }),
-        Animated.timing(opacityValue2, {
-          toValue: 1,
+        Animated.timing(el, {
+          toValue: pressed ? bg : 1,
+          // toValue: bg,
           duration: DURATION,
           useNativeDriver: true,
         })
@@ -164,40 +78,41 @@ function App(): React.JSX.Element {
   };
 
 
-  const handleFadeOut = (pressed: boolean) => {
-    console.log('pressed out')
-    const newVal = !pressed;
-    Animated.sequence([
-      Animated.delay(DURATION / 20),
-      Animated.timing(opacityValue1, {
-        toValue: newVal
-          ? 0
-          : 1,
-        duration: newVal
-          ? DURATION / 2
-          : DURATION,
-        useNativeDriver: true,
-      })
-    ]).start();
+  const handleFadeOut = (bool?: boolean) => {
+    // console.log(held, pressed)
+
+    const newVal = !bool;
     Animated.parallel([
+      Animated.sequence([
+        Animated.delay(DURATION / 20),
+        Animated.timing(initialBtn, {
+          toValue: newVal
+            ? 0
+            : 1,
+          duration: newVal
+            ? DURATION / 2
+            : DURATION,
+          useNativeDriver: true,
+        })
+      ]),
       Animated.timing(scale, {
         toValue: 1.065,
         duration: DURATION,
         useNativeDriver: true,
       }),
-      Animated.timing(opacityValue2, {
+      Animated.timing(activeShadow, {
         toValue: 0,
-        duration: DURATION,
+        duration: DURATION / 2,
         useNativeDriver: true,
       })
     ]).start();
-    // setHeld(false)
+    setHeld(false);
   };
 
-  const handlePressed = (pressed: boolean) => {
-    const newVal = !pressed;
-    // console.log("pressed:", !pressed)
-    Animated.timing(opacityValue1, {
+  const handlePressed = (bool: boolean) => {
+    const newVal = !bool;
+    setPressed(newVal)
+    Animated.timing(initialBtn, {
       toValue: newVal
         ? 0
         : 1,
@@ -205,8 +120,18 @@ function App(): React.JSX.Element {
       useNativeDriver: true,
     }).start
     Animated.parallel([
-      Animated.timing(opacityValue3, {
+      // Animated.timing(activeShadow, {
+      //   toValue: 0,
+      //   duration: DURATION / 2,
+      //   useNativeDriver: true,
+      // }),
+      Animated.timing(activeRunningShadow, {
         toValue: newVal ? 1 : 0,
+        duration: DURATION / 2,
+        useNativeDriver: true,
+      }),
+      Animated.timing(runningShadow, {
+        toValue: 0,
         duration: DURATION / 2,
         useNativeDriver: true,
       }),
@@ -216,10 +141,9 @@ function App(): React.JSX.Element {
         useNativeDriver: true,
       })
     ]).start();
-    setPressed(newVal)
   }
 
-  console.log("fired")
+  // console.log(pressed)
 
   return (
     <Animated.View style={[styles.container, {
@@ -230,12 +154,12 @@ function App(): React.JSX.Element {
         <TouchableOpacity
           activeOpacity={1}
           onPressIn={() => { handleFadeIn(); setHeld(true) }}
-          onPressOut={() => { handleFadeOut(pressed); }}
+          onPressOut={() => { handleFadeOut(pressed) }}
           onPress={() => { handlePressed(pressed) }}
           // {...panResponder.panHandlers}
           // ref={buttonRef}
           style={styles.button}>
-          <Animated.View style={[styles.shadowElement, { opacity: opacityValue1 }]}>
+          <Animated.View style={[styles.shadowElement, { opacity: initialBtn }]}>
             <Animated.View style={[styles.shadowElement, styles.shadow1, { backgroundColor: bgInter }]}></Animated.View>
             <Animated.View style={[styles.shadowElement, styles.shadow2, { backgroundColor: bgInter }]}>
               <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
@@ -258,15 +182,15 @@ function App(): React.JSX.Element {
               </Svg>
             </Animated.View>
           </Animated.View>
-          <Animated.View style={[styles.shadowElement, { opacity: opacityValue3, transform: [{ scale: 1.025 }] }]}>
+          <Animated.View style={[styles.shadowElement, { opacity: activeRunningShadow, transform: [{ scale: 1.025 }] }]}>
             <Animated.View style={[styles.shadowElement, styles.shadow4, { backgroundColor: bgInter }]}></Animated.View>
             <View style={styles.shadowElement}>
               <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
                 <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_37)" />
                 <Defs>
                   <RadialGradient id="paint0_radial_39_37" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                    <Stop offset="0.863394" stopColor="#283057" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#283057" stopOpacity="0.1" />
+                    <Stop offset="0.863394" stopColor="#4D2B26" stopOpacity="0" />
+                    <Stop offset="1" stopColor="#4D2B26" stopOpacity="0.1" />
                   </RadialGradient>
                 </Defs>
               </Svg>
@@ -274,14 +198,14 @@ function App(): React.JSX.Element {
                 <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_38)" />
                 <Defs>
                   <RadialGradient id="paint0_radial_39_38" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                    <Stop stopColor="#E6EDF6" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#E6EDF6" stopOpacity="0.4" />
+                    <Stop stopColor="#ECC9C4" stopOpacity="0" />
+                    <Stop offset="1" stopColor="#ECC9C4" stopOpacity="0.4" />
                   </RadialGradient>
                 </Defs>
               </Svg>
             </View>
           </Animated.View>
-          <Animated.View style={[styles.shadowElement, { opacity: !pressed ? 0 : opacityValue2, transform: [{ scale: scale }] }]}>
+          <Animated.View style={[styles.shadowElement, { opacity: activeShadow, transform: [{ scale: scale }] }]}>
             <Animated.View style={[styles.shadowElement, styles.shadow3, { backgroundColor: bgInter }]}></Animated.View>
             <View style={styles.shadowElement}>
               <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
@@ -304,7 +228,7 @@ function App(): React.JSX.Element {
               </Svg>
             </View>
           </Animated.View>
-          <Animated.View style={[styles.shadowElement, { opacity: pressed ? 0 : opacityValue2, transform: [{ scale: scale }] }]}>
+          <Animated.View style={[styles.shadowElement, { opacity: runningShadow, transform: [{ scale: scale }] }]}>
             <Animated.View style={[styles.shadowElement, styles.shadow5, { backgroundColor: bgInter }]}></Animated.View>
             <View style={styles.shadowElement}>
               <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>

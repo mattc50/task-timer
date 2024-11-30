@@ -44,14 +44,11 @@ function App(): React.JSX.Element {
   const DURATION = 1000;
 
   const handleFadeIn = (bool?: boolean) => {
-    console.log(held, pressed)
-
     if (held && pressed) {
       handleFadeOut(pressed);
       return;
     }
 
-    console.log(held);
     // const el = pressed ? runningShadow : bool ? runningShadow : activeShadow
     const el = pressed ? runningShadow : activeShadow
     Animated.timing(initialBtn, {
@@ -78,10 +75,8 @@ function App(): React.JSX.Element {
   };
 
 
-  const handleFadeOut = (bool?: boolean) => {
-    // console.log(held, pressed)
-
-    const newVal = !bool;
+  const fadeOut = (bool?: boolean) => {
+    const newVal = bool;
     Animated.parallel([
       Animated.sequence([
         Animated.delay(DURATION / 20),
@@ -109,16 +104,15 @@ function App(): React.JSX.Element {
     setHeld(false);
   };
 
+  const handleFadeOut = (bool?: boolean) => {
+    fadeOut(bool);
+  }
+
   const handlePressed = (bool: boolean) => {
-    const newVal = !bool;
+    const newVal = bool;
+    if (newVal) fadeOut(newVal);
+    if (pressed && !newVal) fadeOut(newVal);
     setPressed(newVal)
-    Animated.timing(initialBtn, {
-      toValue: newVal
-        ? 0
-        : 1,
-      duration: 100,
-      useNativeDriver: true,
-    }).start
     Animated.parallel([
       // Animated.timing(activeShadow, {
       //   toValue: 0,
@@ -155,7 +149,7 @@ function App(): React.JSX.Element {
           activeOpacity={1}
           onPressIn={() => { handleFadeIn(); setHeld(true) }}
           onPressOut={() => { handleFadeOut(pressed) }}
-          onPress={() => { handlePressed(pressed) }}
+          onPress={() => { handlePressed(!pressed) }}
           // {...panResponder.panHandlers}
           // ref={buttonRef}
           style={styles.button}>

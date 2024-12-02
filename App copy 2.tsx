@@ -43,101 +43,80 @@ function App(): React.JSX.Element {
 
   const DURATION = 1000;
 
-  const fadeInInitial = (isPressed?: boolean) => {
-    // console.log('pressed:', pressed)
-    const el = pressed ? activeRunningShadow : initialBtn;
-    const shadow = pressed ? runningShadow : activeShadow;
-    // console.log(`shadow is ${pressed ? 'activeRunningShadow' : 'activeShadow'}`)
-    // console.log(activeRunningShadow);
-    // Animated.delay(DURATION / 20),
-    Animated.parallel([
-      Animated.timing(el, {
-        toValue: 0,
-        duration: DURATION,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scale, {
-        toValue: 1.06,
-        duration: DURATION,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shadow, {
-        toValue: 1,
-        duration: DURATION,
-        useNativeDriver: true,
-      })
-    ]).start();
-  }
-
-  const fadeOutInitial = (notPressed?: boolean) => {
-    // console.log('faded out')
-    const val1 = notPressed === undefined || notPressed ? 1 : 0;
-    // const val1 = notPressed ? 1 : 0;
-    // const val2 = pressed ? 1 : 0;
-    // console.log('pressed:', pressed)
-    var el1, el2;
-    el1 = pressed ? activeRunningShadow : initialBtn;
-    console.log(`${pressed ? 'activeRunningShadow' : 'initialBtn'} will go to ${val1}`);
-    // el2 = pressed ? initialBtn : activeRunningShadow;
-    const shadow = pressed ? runningShadow : activeShadow;
-    Animated.timing(el1, {
-      toValue: val1,
+  const fadeInInitial = () => {
+    Animated.timing(initialBtn, {
+      toValue: 0,
       duration: DURATION,
       useNativeDriver: true,
     }).start();
-    // Animated.timing(el2, {
-    //   toValue: val2,
-    //   duration: DURATION,
-    //   useNativeDriver: true,
-    // }).start();
-    // Animated.sequence([
-    // Animated.delay(DURATION / 20),
-    Animated.parallel([
-      Animated.timing(scale, {
-        toValue: 1.06,
-        duration: DURATION,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shadow, {
-        toValue: 0,
-        duration: DURATION / 1.75,
-        useNativeDriver: true,
-      })
-      // ])
+    Animated.sequence([
+      Animated.delay(DURATION / 20),
+      Animated.parallel([
+        Animated.timing(scale, {
+          toValue: 1.06,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(activeShadow, {
+          toValue: bg,
+          // toValue: bg,
+          duration: DURATION,
+          useNativeDriver: true,
+        })
+      ])
     ]).start();
   }
 
-  const twistIn = (isPressed?: boolean) => {
-    // console.log('pressed in twist:', pressed)
-    // const shadow = pressed ? activeRunningShadow : activeShadow;
-
-    // if (pressed) fadeOutInitial(pressed)
-    Animated.parallel([
-      Animated.timing(initialBtn, {
-        toValue: pressed ? 1 : 0,
-        duration: DURATION,
-        useNativeDriver: true,
-      }),
-      Animated.timing(activeRunningShadow, {
-        // toValue: 0,
-        toValue: pressed ? 0 : 1,
-        duration: DURATION,
-        useNativeDriver: true,
-      }),
-      Animated.timing(runningShadow, {
-        // toValue: pressed ? 0 : 1,
-        toValue: 0,
-        duration: DURATION,
-        useNativeDriver: true,
-      }),
-      Animated.timing(bg, {
-        toValue: pressed ? 0 : 1,
-        duration: DURATION,
-        useNativeDriver: true,
-      })
+  const fadeOutInitial = () => {
+    Animated.timing(initialBtn, {
+      toValue: 1,
+      duration: DURATION,
+      useNativeDriver: true,
+    }).start();
+    Animated.sequence([
+      Animated.delay(DURATION / 20),
+      Animated.parallel([
+        Animated.timing(scale, {
+          toValue: 1.06,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(activeShadow, {
+          toValue: 1,
+          // toValue: bg,
+          duration: DURATION,
+          useNativeDriver: true,
+        })
+      ])
     ]).start();
-    // console.log('running pressed')
-    setPressed(!pressed);
+  }
+
+  const twistIn = (bool: boolean) => {
+    if (bool) {
+      Animated.parallel([
+
+        Animated.timing(initialBtn, {
+          toValue: 0,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(activeShadow, {
+          toValue: 0,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(activeRunningShadow, {
+          toValue: 0,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(runningShadow, {
+          toValue: 0,
+          duration: DURATION,
+          useNativeDriver: true,
+        })
+      ]).start();
+    }
   }
 
   const handleFadeIn = (bool?: boolean) => {
@@ -259,11 +238,11 @@ function App(): React.JSX.Element {
       <SafeAreaView style={styles.parent}>
         <TouchableOpacity
           activeOpacity={1}
-          // onPressIn={() => { handleFadeIn(); setHeld(true) }}
-          onPressIn={() => { fadeInInitial(pressed) }}
-          // onPressOut={() => { handleFadeOut(pressed) }}
-          onPressOut={() => { fadeOutInitial() }}
-          onPress={() => { twistIn(!pressed) }}
+          onPressIn={() => { handleFadeIn(); setHeld(true) }}
+          // onPressIn={() => { fadeInInitial() }}
+          onPressOut={() => { handleFadeOut(pressed) }}
+          // onPressOut={() => { fadeOutInitial() }}
+          onPress={() => { handlePressed(!pressed) }}
           // {...panResponder.panHandlers}
           // ref={buttonRef}
           style={styles.button}>

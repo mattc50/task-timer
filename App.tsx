@@ -20,9 +20,11 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
+import Time from './src/components/Time';
+import Toast from './src/components/Toast';
 
 function App(): React.JSX.Element {
+  const [held, setHeld] = useState(false);
   const [pressed, setPressed] = useState(false);
 
   const initialBtn = useRef(new Animated.Value(1)).current;
@@ -39,6 +41,49 @@ function App(): React.JSX.Element {
   const scale = useRef(new Animated.Value(1.06)).current;
 
   const DURATION = 1000;
+
+  const [time, setTime] = useState<number>(0);
+  const timeOpacity = useRef(new Animated.Value(0.6)).current;
+  const timeScale = useRef(new Animated.Value(1)).current;
+
+  const [toastDisplay, setToastDisplay] = useState(false);
+  const toastPosition = useRef(new Animated.Value(0)).current;
+
+
+  useEffect(() => {
+    let interval: any = 0;
+
+    if (pressed) {
+      interval = setInterval(() => {
+        setTime((time) => time + 1000);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => {
+      clearInterval(interval);
+    }
+  }, [pressed]);
+
+  const handleStop = () => {
+    setPressed(false);
+    setTime(0);
+  }
+
+  const makePressEffects = () => {
+    Animated.parallel([
+      Animated.timing(timeOpacity, {
+        toValue: held ? 0.6 : 0.5,
+        duration: DURATION,
+        useNativeDriver: true,
+      }),
+      Animated.timing(timeScale, {
+        toValue: held ? 1 : 0.99,
+        duration: DURATION,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }
 
   const fadeInInitial = () => {
     const el = pressed ? activeRunningShadow : initialBtn;
@@ -60,6 +105,8 @@ function App(): React.JSX.Element {
         useNativeDriver: true,
       })
     ]).start();
+    makePressEffects();
+    setHeld(true);
   }
 
   const fadeOutInitial = (notPressed?: boolean) => {
@@ -83,6 +130,8 @@ function App(): React.JSX.Element {
         useNativeDriver: true,
       })
     ]).start();
+    makePressEffects();
+    setHeld(false);
   }
 
   const twistIn = () => {
@@ -108,12 +157,27 @@ function App(): React.JSX.Element {
         useNativeDriver: true,
       })
     ]).start();
+    if (pressed) handleStop();
     setPressed(!pressed);
   }
 
   return (
     <Animated.View style={[styles.container, { backgroundColor: bgInter }]}>
       <SafeAreaView style={styles.parent}>
+        <Time
+          timeScale={timeScale}
+          timeOpacity={timeOpacity}
+          time={time}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            zIndex: 2,
+            transform: [
+              { translateX: "-50%" }, { translateY: "50%" }
+            ]
+          }}
+        />
         <TouchableOpacity
           activeOpacity={1}
           onPressIn={() => { fadeInInitial() }}
@@ -213,6 +277,7 @@ function App(): React.JSX.Element {
             </View>
           </Animated.View>
         </TouchableOpacity>
+        <Toast style={styles.toast} />
       </SafeAreaView>
     </Animated.View>
   )
@@ -256,15 +321,12 @@ const styles = StyleSheet.create({
     shadowRadius: 24
   },
   shadow3: {
-    // shadowColor: "rgb(40, 48, 87)",
-    // shadowColor: "rgb(40, 48, 87)",
     shadowColor: "rgb(77, 43, 38)",
     shadowOpacity: 0.04,
     shadowRadius: 60
   },
   shadow4: {
     shadowColor: "rgb(40, 48, 87)",
-    // shadowColor: "rgb(77, 43, 38)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 28
@@ -279,6 +341,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0
+  },
+  toast: {
+    position: "absolute",
+    bottom: 0
   }
 });
 

@@ -15,6 +15,12 @@ const Time: React.FC<TimeProps> = ({ timeScale, timeOpacity, time }) => {
           styles.text,
           { opacity: timeOpacity }
         ]}>
+          {("0" + Math.floor((time / 3600000) % 60)).slice(-2)}:
+        </Animated.Text>
+        <Animated.Text style={[
+          styles.text,
+          { opacity: timeOpacity }
+        ]}>
           {("0" + Math.floor((time / 60000) % 60)).slice(-2)}:
         </Animated.Text>
         <Animated.Text style={[

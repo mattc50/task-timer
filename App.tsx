@@ -66,8 +66,8 @@ function App(): React.JSX.Element {
 
     if (pressed) {
       interval = setInterval(() => {
-        setTime((time) => time + 6000);
-      }, 10);
+        setTime((time) => time + 1000);
+      }, 1000);
 
       setToastDisplay(false);
 

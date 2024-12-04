@@ -21,6 +21,8 @@ import TimerButton from './src/components/TimerButton';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import EntryForm from './src/components/EntryForm';
 import TimesList from './src/components/TimesList';
+import ShowTimes from './src/components/ShowTimes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function App(): React.JSX.Element {
   const [held, setHeld] = useState(false);
@@ -52,6 +54,8 @@ function App(): React.JSX.Element {
 
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showList, setShowList] = useState<boolean>(false);
+
+  const [data, setData] = useState<Object>({})
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
@@ -185,13 +189,42 @@ function App(): React.JSX.Element {
     setPressed(!pressed);
   }
 
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('data');
+      if (value !== null) {
+        // console.log(value)
+        return value;
+      }
+    } catch (e) {
+
+    }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getData();
+      if (data) {
+        setData(JSON.parse(data))
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    console.log('run effect');
+  }, [data])
+
   return (
     <SafeAreaProvider>
       <Animated.View style={[styles.container, { backgroundColor: bgInter }]}>
         <SafeAreaView style={styles.parent}>
-          <Pressable onPress={() => setShowList(true)}>
-            <Text>Show Times</Text>
-          </Pressable>
+          <ShowTimes
+            data={data}
+            setData={setData}
+            setShowList={setShowList}
+          />
           <View style={{
             // backgroundColor: "red",
             display: "flex",
@@ -222,11 +255,15 @@ function App(): React.JSX.Element {
             setShowForm={setShowForm}
           />
           {showForm && <EntryForm
+            data={data}
+            setData={setData}
             timeToSubmit={lastTime}
             showForm={showForm}
             setShowForm={setShowForm}
           />}
           {showList && <TimesList
+            data={data}
+            setData={setData}
             showList={showList}
             setShowList={setShowList}
           />}

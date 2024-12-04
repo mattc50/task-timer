@@ -8,12 +8,14 @@ import ModalScreen from "./ModalScreen";
 import { formatTime } from "../utils/formatTime";
 
 interface EntryFormProps {
+  data: Object,
+  setData: Function,
   timeToSubmit: number,
   showForm: boolean,
   setShowForm: Function,
 }
 
-const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowForm }) => {
+const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, showForm, setShowForm }) => {
   const insets = useSafeAreaInsets();
 
   const [task, setTask] = useState<string>("");
@@ -41,25 +43,25 @@ const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowFo
     ]
   }
 
-  const getData = async (key: string = 'data') => {
-    try {
-      const value = await AsyncStorage.getItem(key);
-      if (value !== null) return value;
-    } catch (e) {
+  // const getData = async (key: string = 'data') => {
+  //   try {
+  //     const value = await AsyncStorage.getItem(key);
+  //     if (value !== null) return value;
+  //   } catch (e) {
 
-    }
-  }
+  //   }
+  // }
 
-  const getAllData = async () => {
-    try {
-      const data = await AsyncStorage.getAllKeys();
-      for (let key in data) {
-        getData(key)
-      }
-    } catch (e) {
+  // const getAllData = async () => {
+  //   try {
+  //     const data = await AsyncStorage.getAllKeys();
+  //     for (let key in data) {
+  //       getData(key)
+  //     }
+  //   } catch (e) {
 
-    }
-  }
+  //   }
+  // }
 
   const date = new Date(Date.now());
   const dateID: string = date.toISOString().slice(0, 10)
@@ -70,29 +72,31 @@ const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowFo
 
   const storeData = async (value: Object) => {
     try {
-      const data = await getData();
+      // const data = await getData();
+
       console.log(data)
       if (data) {
         console.log('there is data')
-        const dataObj: Object = JSON.parse(data);
-        console.log(dataObj);
+        const dataObj: Object = { ...data };
+        // console.log(dataObj);
         const dateArray: Object[] = dataObj[dateID];
         if (dateArray) {
           dateArray.push(value);
         } else {
           dataObj[dateID] = [value];
         }
-        console.log(dataObj);
+        // console.log(dataObj);
         const JSONValue = JSON.stringify(dataObj);
         await AsyncStorage.setItem('data', JSONValue);
         console.log('data updated')
+        setData(dataObj)
       } else {
         const dataToStore = {
           [dateID]: [
             value
           ]
         }
-        console.log(dataToStore)
+        // console.log(dataToStore)
         const JSONValue = JSON.stringify(dataToStore);
         await AsyncStorage.setItem('data', JSONValue);
         console.log('new data uploaded')
@@ -102,32 +106,32 @@ const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowFo
     }
   }
 
-  const removeData = async (key: any) => {
-    try {
-      await AsyncStorage.removeItem(key);
-      return true;
-    }
-    catch (exception) {
-      return false;
-    }
-  }
+  // const removeData = async (key: any) => {
+  //   try {
+  //     await AsyncStorage.removeItem(key);
+  //     return true;
+  //   }
+  //   catch (exception) {
+  //     return false;
+  //   }
+  // }
 
-  const removeAll = async () => {
-    const data = await getData();
-    if (data) {
-      console.log(data);
-      const dataJSON = JSON.parse(data);
-      console.log(dataJSON)
-      const keys = Object.keys(dataJSON);
-      console.log(keys);
-      for (let i = 0; i < keys.length; i++) {
-        dataJSON.pop();
-      }
-      console.log(dataJSON);
-      // await AsyncStorage.setItem('data', JSON.stringify(dataJSON));
-      // removeData(key);
-    }
-  }
+  // const removeAll = async () => {
+  //   const data = await getData();
+  //   if (data) {
+  //     console.log(data);
+  //     const dataJSON = JSON.parse(data);
+  //     console.log(dataJSON)
+  //     const keys = Object.keys(dataJSON);
+  //     console.log(keys);
+  //     for (let i = 0; i < keys.length; i++) {
+  //       dataJSON.pop();
+  //     }
+  //     console.log(dataJSON);
+  //     // await AsyncStorage.setItem('data', JSON.stringify(dataJSON));
+  //     // removeData(key);
+  //   }
+  // }
 
   // const resetData = async () => {
   //   await AsyncStorage.setItem('data', JSON.stringify({}));

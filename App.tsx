@@ -9,14 +9,18 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import {
   Animated,
+  Pressable,
   SafeAreaView,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import Time from './src/components/Time';
 import Toast from './src/components/Toast';
 import TimerButton from './src/components/TimerButton';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import EntryForm from './src/components/EntryForm';
+import TimesList from './src/components/TimesList';
 
 function App(): React.JSX.Element {
   const [held, setHeld] = useState(false);
@@ -47,6 +51,7 @@ function App(): React.JSX.Element {
   const timerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [showList, setShowList] = useState<boolean>(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
@@ -184,22 +189,33 @@ function App(): React.JSX.Element {
     <SafeAreaProvider>
       <Animated.View style={[styles.container, { backgroundColor: bgInter }]}>
         <SafeAreaView style={styles.parent}>
-          <Time
-            timeScale={timeScale}
-            timeOpacity={timeOpacity}
-            time={time}
-          />
-          <TimerButton
-            fadeIn={fadeIn}
-            fadeOut={fadeOut}
-            togglePress={togglePress}
-            initialBtn={initialBtn}
-            activeShadow={activeShadow}
-            runningShadow={runningShadow}
-            activeRunningShadow={activeRunningShadow}
-            scale={scale}
-            bgInter={bgInter}
-          />
+          <Pressable onPress={() => setShowList(true)}>
+            <Text>Show Times</Text>
+          </Pressable>
+          <View style={{
+            // backgroundColor: "red",
+            display: "flex",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+            <Time
+              timeScale={timeScale}
+              timeOpacity={timeOpacity}
+              time={time}
+            />
+            <TimerButton
+              fadeIn={fadeIn}
+              fadeOut={fadeOut}
+              togglePress={togglePress}
+              initialBtn={initialBtn}
+              activeShadow={activeShadow}
+              runningShadow={runningShadow}
+              activeRunningShadow={activeRunningShadow}
+              scale={scale}
+              bgInter={bgInter}
+            />
+          </View>
           <Toast
             time={lastTime}
             toastDisplay={toastDisplay}
@@ -209,6 +225,10 @@ function App(): React.JSX.Element {
             timeToSubmit={lastTime}
             showForm={showForm}
             setShowForm={setShowForm}
+          />}
+          {showList && <TimesList
+            showList={showList}
+            setShowList={setShowList}
           />}
         </SafeAreaView>
       </Animated.View>

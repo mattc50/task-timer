@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Animated, Dimensions, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { formatTime } from "../utils/formatTime"
 
 interface ToastProps {
   style?: Object,
@@ -45,7 +46,7 @@ const Toast: React.FC<ToastProps> = ({ time, toastDisplay, setShowForm }) => {
       <Pressable
         onPress={() => setShowForm(true)}
       >
-        <Text style={styles.text}>Your time was: {time}</Text>
+        <Text style={styles.text}>Your time was: {formatTime(time)}</Text>
       </Pressable>
     </Animated.View>
   )

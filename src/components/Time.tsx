@@ -38,11 +38,12 @@ const styles = StyleSheet.create({
     left: "50%",
     zIndex: 2,
     transform: [
-      // { translateX: "-50%" }, { translateY: "50%" }
-      { translateX: -100 }, { translateY: 30 }
+      // { translateX: -100 }, { translateY: 30 }
+      { translateX: -156 }, { translateY: -28 }
     ]
   },
   time: {
+    // backgroundColor: "red",
     height: 60,
     width: 200,
     display: "flex",
@@ -50,7 +51,6 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   text: {
-    // lineHeight: 60,
     fontSize: 48,
     fontWeight: 500,
     color: "#333333",

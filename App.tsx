@@ -24,6 +24,10 @@ import TimesList from './src/components/TimesList';
 import ShowTimes from './src/components/ShowTimes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+type DataObject = {
+  [key: string]: Object[]; // Date keys with arrays of objects
+};
+
 function App(): React.JSX.Element {
   const [held, setHeld] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -55,15 +59,15 @@ function App(): React.JSX.Element {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showList, setShowList] = useState<boolean>(false);
 
-  const [data, setData] = useState<Object>({})
+  const [data, setData] = useState<DataObject>({})
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
 
     if (pressed) {
       interval = setInterval(() => {
-        setTime((time) => time + 1000);
-      }, 1000);
+        setTime((time) => time + 6000);
+      }, 10);
 
       setToastDisplay(false);
 

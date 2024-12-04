@@ -8,12 +8,16 @@ import ModalScreen from "./ModalScreen";
 import { formatTime } from "../utils/formatTime";
 
 interface EntryFormProps {
-  data: Object,
+  data: DataObject,
   setData: Function,
   timeToSubmit: number,
   showForm: boolean,
   setShowForm: Function,
 }
+
+type DataObject = {
+  [key: string]: Object[]; // Date keys with arrays of objects
+};
 
 const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, showForm, setShowForm }) => {
   const insets = useSafeAreaInsets();
@@ -54,8 +58,9 @@ const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, show
     try {
       if (data) {
         // console.log('there is data')
-        const dataObj: Object = { ...data };
-        const dateArray: Object[] = dataObj[dateID];
+        const dataObj: DataObject = { ...data };
+        console.log("dataObj:", dataObj)
+        const dateArray: Object[] = dataObj[dateID as keyof Object];
         if (dateArray) {
           dateArray.push(value);
         } else {

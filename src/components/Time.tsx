@@ -23,9 +23,6 @@ const Time: React.FC<TimeProps> = ({ timeScale, timeOpacity, time }) => {
         ]}>
           {("0" + Math.floor((time / 1000) % 60)).slice(-2)}
         </Animated.Text>
-        {/* <Text>
-          {("0" + ((time / 10) % 100)).slice(-2)}
-        </Text> */}
       </Animated.View>
     </View>
   )
@@ -43,7 +40,6 @@ const styles = StyleSheet.create({
     ]
   },
   time: {
-    // backgroundColor: "red",
     height: 60,
     width: 200,
     display: "flex",

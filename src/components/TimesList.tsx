@@ -8,11 +8,15 @@ import ModalScreen from "./ModalScreen";
 import { formatTime } from "../utils/formatTime";
 
 interface TimesListProps {
-  data: Object,
+  data: DataObject,
   setData: Function,
   showList: boolean,
   setShowList: Function,
 }
+
+type DataObject = {
+  [key: string]: Object[]; // Date keys with arrays of objects
+};
 
 const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowList }) => {
   const listOpacity = useRef(new Animated.Value(0)).current;
@@ -53,9 +57,9 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
     }
   }
 
-  const removeItem = async (date: string, item: string, index: number) => {
+  const removeItem = async (date: string, index: number) => {
     // setLoading(true);
-    const dataObj = { ...data }
+    const dataObj: any = { ...data }
     const dateArray = dataObj[date];
     const modifiedArray = dateArray;
     modifiedArray.splice(index, 1);
@@ -82,7 +86,7 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
 
   useEffect(() => {
     if (data) {
-      const dataJSON = data;
+      const dataJSON = { ...data };
       setDates(Object.keys(dataJSON));
     }
     // setLoading(false)
@@ -112,19 +116,21 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
           keyboardShouldPersistTaps='handled'
         >
           {dates.length > 0 && dates.map((date, index) => {
+            const dataIndex: any = data[date as keyof DataObject];
+
             return (
               <View key={index} style={{ marginBottom: 24 }}>
                 <Text style={styles.date}>
                   {renderDate(date)}
                 </Text>
-                {data[date].map((item, index) => {
+                {dataIndex.map((item: string[], index: number) => {
                   return (
                     <View key={index} style={styles.taskItem}>
                       <Text style={[styles.text, styles.name]}>{Object.keys(item)}</Text>
                       <Text style={[styles.text, styles.time]}>{formatTime(Object.values(item))}</Text>
                       <Pressable
                         style={{ padding: 4, marginLeft: 12 }}
-                        onPress={() => removeItem(date, item, index)}
+                        onPress={() => removeItem(date, index)}
                       >
                         <Icon name="delete-outline" size={20} color="rgba(55, 58, 63, 0.5)" />
                       </Pressable>

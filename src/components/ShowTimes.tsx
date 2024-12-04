@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native"
 
 interface ShowTimesProps {
-  data: Object,
+  data: DataObject,
   setData: Function,
   setShowList: Function
 }
+
+type DataObject = {
+  [key: string]: Object[]; // Date keys with arrays of objects
+};
 
 const ShowTimes: React.FC<ShowTimesProps> = ({ data, setData, setShowList }) => {
   const [count, setCount] = useState<Object>({})
@@ -13,7 +17,7 @@ const ShowTimes: React.FC<ShowTimesProps> = ({ data, setData, setShowList }) => 
   useEffect(() => {
     let count = 0;
     if (data) {
-      const dataJSON = data;
+      const dataJSON: DataObject = data;
       for (let date in dataJSON) {
         for (let item of dataJSON[date]) {
           count++;

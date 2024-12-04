@@ -5,13 +5,11 @@ interface TimeProps {
   timeScale?: any,
   timeOpacity?: AnimatableNumericValue,
   time: number,
-  style?: Object
 }
 
-const Time: React.FC<TimeProps> = ({ timeScale, timeOpacity, time, style }) => {
+const Time: React.FC<TimeProps> = ({ timeScale, timeOpacity, time }) => {
   return (
-    <View style={style}>
-      {/* <Text>{time}</Text> */}
+    <View style={styles.timeContainer} pointerEvents="none">
       <Animated.View style={[styles.time, { transform: [{ scale: timeScale }] }]}>
         <Animated.Text style={[
           styles.text,
@@ -34,15 +32,28 @@ const Time: React.FC<TimeProps> = ({ timeScale, timeOpacity, time, style }) => {
 }
 
 const styles = StyleSheet.create({
+  timeContainer: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    zIndex: 2,
+    transform: [
+      // { translateX: "-50%" }, { translateY: "50%" }
+      { translateX: -100 }, { translateY: 30 }
+    ]
+  },
   time: {
+    height: 60,
+    width: 200,
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    justifyContent: "center"
   },
   text: {
+    // lineHeight: 60,
     fontSize: 48,
     fontWeight: 500,
     color: "#333333",
-    // opacity: 0.75,
     fontFamily: "Inter",
     fontVariant: ["lining-nums", "tabular-nums"],
   }

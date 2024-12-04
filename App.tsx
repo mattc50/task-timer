@@ -6,22 +6,17 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import Svg, { Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 
 import {
   Animated,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  Touchable,
-  TouchableOpacity,
-  useColorScheme,
-  View,
 } from 'react-native';
 import Time from './src/components/Time';
 import Toast from './src/components/Toast';
+import TimerButton from './src/components/TimerButton';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import EntryForm from './src/components/EntryForm';
 
 function App(): React.JSX.Element {
   const [held, setHeld] = useState(false);
@@ -43,31 +38,82 @@ function App(): React.JSX.Element {
   const DURATION = 1000;
 
   const [time, setTime] = useState<number>(0);
+  const [lastTime, setLastTime] = useState<number>(0);
+  // const [toastTime, setToastTime] = useState<number>(time);
   const timeOpacity = useRef(new Animated.Value(0.6)).current;
   const timeScale = useRef(new Animated.Value(1)).current;
 
   const [toastDisplay, setToastDisplay] = useState(false);
-  const toastPosition = useRef(new Animated.Value(0)).current;
+  // const toastPosition = useRef(new Animated.Value(0)).current;
 
+  const timerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [showForm, setShowForm] = useState<boolean>(false);
+  // const formOpacity = useRef(new Animated.Value(0)).current;
+  // const formTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    let interval: any = 0;
+    let interval: NodeJS.Timeout | undefined;
+    // let timeout: any = null;
 
     if (pressed) {
       interval = setInterval(() => {
         setTime((time) => time + 1000);
       }, 1000);
+
+      setToastDisplay(false);
+
+      if (timerTimeoutRef.current) {
+        clearTimeout(timerTimeoutRef.current);
+        timerTimeoutRef.current = null;
+      }
     } else {
       clearInterval(interval);
+
+      if (time > 0) {
+        setToastDisplay(true);
+        timerTimeoutRef.current = setTimeout(() => {
+          console.log('will hide toast')
+          setToastDisplay(false);
+          timerTimeoutRef.current = null;
+        }, 5000);
+
+        setLastTime(time);
+        setTime(0);
+      }
     }
     return () => {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
+      if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
   }, [pressed]);
 
+  // useEffect(() => {
+  //   console.log(showForm)
+  //   if (showForm) {
+  //     Animated.timing(formOpacity, {
+  //       toValue: 1,
+  //       duration: 100,
+  //       useNativeDriver: true,
+  //     }).start();
+  //   } else {
+  //     Animated.timing(formOpacity, {
+  //       toValue: 0,
+  //       duration: 100,
+  //       useNativeDriver: true,
+  //     }).start();
+  //     timerTimeoutRef.current = setTimeout(() => {
+  //       setShowForm(false);
+  //     }, 100);
+  //   }
+  //   return () => {
+  //     if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
+  //   }
+  // }, [openForm, closeForm])
+
   const handleStop = () => {
     setPressed(false);
-    setTime(0);
+    // setLastTime(time);
   }
 
   const makePressEffects = () => {
@@ -78,14 +124,14 @@ function App(): React.JSX.Element {
         useNativeDriver: true,
       }),
       Animated.timing(timeScale, {
-        toValue: held ? 1 : 0.99,
+        toValue: held ? 1 : pressed ? 0.985 : 0.99,
         duration: DURATION,
         useNativeDriver: true,
       })
     ]).start();
   }
 
-  const fadeInInitial = () => {
+  const fadeIn = () => {
     const el = pressed ? activeRunningShadow : initialBtn;
     const shadow = pressed ? runningShadow : activeShadow;
     Animated.parallel([
@@ -109,7 +155,7 @@ function App(): React.JSX.Element {
     setHeld(true);
   }
 
-  const fadeOutInitial = (notPressed?: boolean) => {
+  const fadeOut = (notPressed?: boolean) => {
     const val = notPressed === undefined || notPressed ? 1 : 0;
     const el = pressed ? activeRunningShadow : initialBtn;
     const shadow = pressed ? runningShadow : activeShadow;
@@ -134,7 +180,7 @@ function App(): React.JSX.Element {
     setHeld(false);
   }
 
-  const twistIn = () => {
+  const togglePress = () => {
     Animated.parallel([
       Animated.timing(initialBtn, {
         toValue: pressed ? 1 : 0,
@@ -157,129 +203,45 @@ function App(): React.JSX.Element {
         useNativeDriver: true,
       })
     ]).start();
-    if (pressed) handleStop();
+    if (pressed) {
+      handleStop();
+    }
     setPressed(!pressed);
   }
 
   return (
-    <Animated.View style={[styles.container, { backgroundColor: bgInter }]}>
-      <SafeAreaView style={styles.parent}>
-        <Time
-          timeScale={timeScale}
-          timeOpacity={timeOpacity}
-          time={time}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            zIndex: 2,
-            transform: [
-              { translateX: "-50%" }, { translateY: "50%" }
-            ]
-          }}
-        />
-        <TouchableOpacity
-          activeOpacity={1}
-          onPressIn={() => { fadeInInitial() }}
-          onPressOut={() => { fadeOutInitial() }}
-          onPress={() => { twistIn() }}
-          style={styles.button}>
-          <Animated.View style={[styles.shadowElement, { opacity: initialBtn }]}>
-            <Animated.View style={[styles.shadowElement, styles.shadow1, { backgroundColor: bgInter }]}></Animated.View>
-            <Animated.View style={[styles.shadowElement, styles.shadow2, { backgroundColor: bgInter }]}>
-              <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_4_12)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_4_12" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 173.5) rotate(-90) scale(159)">
-                    <Stop offset="0.85" stopColor="white" stopOpacity="0" />
-                    <Stop offset="1" stopColor="white" stopOpacity="0.6" />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-              <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_4_13)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_4_13" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 110) rotate(90) scale(162)">
-                    <Stop offset="0.828694" stopColor="#283057" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#283057" stopOpacity="0.08" />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-            </Animated.View>
-          </Animated.View>
-          <Animated.View style={[styles.shadowElement, { opacity: activeRunningShadow, transform: [{ scale: 1.025 }] }]}>
-            <Animated.View style={[styles.shadowElement, styles.shadow4, { backgroundColor: bgInter }]}></Animated.View>
-            <View style={styles.shadowElement}>
-              <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_37)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_39_37" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                    <Stop offset="0.863394" stopColor="#4D2B26" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#4D2B26" stopOpacity="0.1" />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-              <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_38)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_39_38" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                    <Stop stopColor="#ECC9C4" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#ECC9C4" stopOpacity="0.4" />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-            </View>
-          </Animated.View>
-          <Animated.View style={[styles.shadowElement, { opacity: activeShadow, transform: [{ scale: scale }] }]}>
-            <Animated.View style={[styles.shadowElement, styles.shadow3, { backgroundColor: bgInter }]}></Animated.View>
-            <View style={styles.shadowElement}>
-              <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_25)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_35_25" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 152) rotate(90) scale(128)">
-                    <Stop offset="0.755" stopColor="#283057" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#283057" stopOpacity="0.1" />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-              <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_26)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_35_26" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                    <Stop offset="0.89" stopColor={"#E6EDF6"} stopOpacity="0" />
-                    <Stop offset="1" stopColor={"#E6EDF6"} />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-            </View>
-          </Animated.View>
-          <Animated.View style={[styles.shadowElement, { opacity: runningShadow, transform: [{ scale: scale }] }]}>
-            <Animated.View style={[styles.shadowElement, styles.shadow5, { backgroundColor: bgInter }]}></Animated.View>
-            <View style={styles.shadowElement}>
-              <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_25)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_35_25" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 152) rotate(90) scale(128)">
-                    <Stop offset="0.755" stopColor="#4D2B26" stopOpacity="0" />
-                    <Stop offset="1" stopColor="#4D2B26" stopOpacity="0.1" />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-              <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
-                <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_26)" />
-                <Defs>
-                  <RadialGradient id="paint0_radial_35_26" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                    <Stop offset="0.89" stopColor={"#ECC9C4"} stopOpacity="0" />
-                    <Stop offset="1" stopColor={"#ECC9C4"} />
-                  </RadialGradient>
-                </Defs>
-              </Svg>
-            </View>
-          </Animated.View>
-        </TouchableOpacity>
-        <Toast style={styles.toast} />
-      </SafeAreaView>
-    </Animated.View>
+    <SafeAreaProvider>
+      <Animated.View style={[styles.container, { backgroundColor: bgInter }]}>
+        <SafeAreaView style={styles.parent}>
+          <Time
+            timeScale={timeScale}
+            timeOpacity={timeOpacity}
+            time={time}
+          />
+          <TimerButton
+            fadeIn={fadeIn}
+            fadeOut={fadeOut}
+            togglePress={togglePress}
+            initialBtn={initialBtn}
+            activeShadow={activeShadow}
+            runningShadow={runningShadow}
+            activeRunningShadow={activeRunningShadow}
+            scale={scale}
+            bgInter={bgInter}
+          />
+          <Toast
+            time={lastTime}
+            toastDisplay={toastDisplay}
+            setShowForm={setShowForm}
+          />
+          {showForm && <EntryForm
+            timeToSubmit={lastTime}
+            showForm={showForm}
+            setShowForm={setShowForm}
+          />}
+        </SafeAreaView>
+      </Animated.View>
+    </SafeAreaProvider>
   )
 }
 
@@ -294,58 +256,54 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 1
   },
-  button: {
-    position: "relative",
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-  },
-  shadowElement: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    borderRadius: "100%",
-  },
-  shadow1: {
-    shadowColor: "rgb(255, 255, 255)",
-    shadowOffset: { width: 0, height: -24 },
-    shadowOpacity: 1,
-    shadowRadius: 100
-  },
-  shadow2: {
-    shadowColor: "rgb(40, 48, 87)",
-    shadowOffset: { width: 0, height: 32 },
-    shadowOpacity: 0.2,
-    shadowRadius: 24
-  },
-  shadow3: {
-    shadowColor: "rgb(77, 43, 38)",
-    shadowOpacity: 0.04,
-    shadowRadius: 60
-  },
-  shadow4: {
-    shadowColor: "rgb(40, 48, 87)",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 28
-  },
-  shadow5: {
-    shadowColor: "rgb(77, 43, 38)",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 28
-  },
-  svg: {
-    position: "absolute",
-    top: 0,
-    left: 0
-  },
-  toast: {
-    position: "absolute",
-    bottom: 0
-  }
+  // button: {
+  //   position: "relative",
+  //   width: 280,
+  //   height: 280,
+  //   borderRadius: 140,
+  // },
+  // shadowElement: {
+  //   position: "absolute",
+  //   top: 0,
+  //   left: 0,
+  //   width: "100%",
+  //   height: "100%",
+  //   borderRadius: "100%",
+  // },
+  // shadow1: {
+  //   shadowColor: "rgb(255, 255, 255)",
+  //   shadowOffset: { width: 0, height: -24 },
+  //   shadowOpacity: 1,
+  //   shadowRadius: 100
+  // },
+  // shadow2: {
+  //   shadowColor: "rgb(40, 48, 87)",
+  //   shadowOffset: { width: 0, height: 32 },
+  //   shadowOpacity: 0.2,
+  //   shadowRadius: 24
+  // },
+  // shadow3: {
+  //   shadowColor: "rgb(77, 43, 38)",
+  //   shadowOpacity: 0.04,
+  //   shadowRadius: 60
+  // },
+  // shadow4: {
+  //   shadowColor: "rgb(40, 48, 87)",
+  //   shadowOffset: { width: 0, height: 4 },
+  //   shadowOpacity: 0.04,
+  //   shadowRadius: 28
+  // },
+  // shadow5: {
+  //   shadowColor: "rgb(77, 43, 38)",
+  //   shadowOffset: { width: 0, height: 4 },
+  //   shadowOpacity: 0.04,
+  //   shadowRadius: 28
+  // },
+  // svg: {
+  //   position: "absolute",
+  //   top: 0,
+  //   left: 0
+  // },
 });
 
 export default App;

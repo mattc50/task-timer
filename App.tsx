@@ -39,22 +39,17 @@ function App(): React.JSX.Element {
 
   const [time, setTime] = useState<number>(0);
   const [lastTime, setLastTime] = useState<number>(0);
-  // const [toastTime, setToastTime] = useState<number>(time);
   const timeOpacity = useRef(new Animated.Value(0.6)).current;
   const timeScale = useRef(new Animated.Value(1)).current;
 
   const [toastDisplay, setToastDisplay] = useState(false);
-  // const toastPosition = useRef(new Animated.Value(0)).current;
 
   const timerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [showForm, setShowForm] = useState<boolean>(false);
-  // const formOpacity = useRef(new Animated.Value(0)).current;
-  // const formTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
-    // let timeout: any = null;
 
     if (pressed) {
       interval = setInterval(() => {
@@ -88,32 +83,8 @@ function App(): React.JSX.Element {
     }
   }, [pressed]);
 
-  // useEffect(() => {
-  //   console.log(showForm)
-  //   if (showForm) {
-  //     Animated.timing(formOpacity, {
-  //       toValue: 1,
-  //       duration: 100,
-  //       useNativeDriver: true,
-  //     }).start();
-  //   } else {
-  //     Animated.timing(formOpacity, {
-  //       toValue: 0,
-  //       duration: 100,
-  //       useNativeDriver: true,
-  //     }).start();
-  //     timerTimeoutRef.current = setTimeout(() => {
-  //       setShowForm(false);
-  //     }, 100);
-  //   }
-  //   return () => {
-  //     if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
-  //   }
-  // }, [openForm, closeForm])
-
   const handleStop = () => {
     setPressed(false);
-    // setLastTime(time);
   }
 
   const makePressEffects = () => {
@@ -256,54 +227,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 1
   },
-  // button: {
-  //   position: "relative",
-  //   width: 280,
-  //   height: 280,
-  //   borderRadius: 140,
-  // },
-  // shadowElement: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   width: "100%",
-  //   height: "100%",
-  //   borderRadius: "100%",
-  // },
-  // shadow1: {
-  //   shadowColor: "rgb(255, 255, 255)",
-  //   shadowOffset: { width: 0, height: -24 },
-  //   shadowOpacity: 1,
-  //   shadowRadius: 100
-  // },
-  // shadow2: {
-  //   shadowColor: "rgb(40, 48, 87)",
-  //   shadowOffset: { width: 0, height: 32 },
-  //   shadowOpacity: 0.2,
-  //   shadowRadius: 24
-  // },
-  // shadow3: {
-  //   shadowColor: "rgb(77, 43, 38)",
-  //   shadowOpacity: 0.04,
-  //   shadowRadius: 60
-  // },
-  // shadow4: {
-  //   shadowColor: "rgb(40, 48, 87)",
-  //   shadowOffset: { width: 0, height: 4 },
-  //   shadowOpacity: 0.04,
-  //   shadowRadius: 28
-  // },
-  // shadow5: {
-  //   shadowColor: "rgb(77, 43, 38)",
-  //   shadowOffset: { width: 0, height: 4 },
-  //   shadowOpacity: 0.04,
-  //   shadowRadius: 28
-  // },
-  // svg: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0
-  // },
 });
 
 export default App;

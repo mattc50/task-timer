@@ -1,8 +1,9 @@
-import { Animated, Button, Keyboard, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native"
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
 import TextField from "./TextField";
 import { useEffect, useRef, useState } from "react";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface EntryFormProps {
   timeToSubmit: number,
@@ -39,21 +40,55 @@ const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowFo
       }).start();
   })
 
+  const testData = {
+    "data": [
+      { "task1": "1000" },
+      { "task2": "2000" },
+      { "task1": "1000" }
+    ]
+  }
+
+  // console.log(JSON.stringify(testData));
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('data');
+      // console.log("Data:", value)
+      if (value !== null) return value;
+    } catch (e) {
+
+    }
+  }
+
+  const storeData = async (value: Object) => {
+    // console.log(`${task}: ${timeToSubmit}`)
+    // console.log("Data:", JSON.stringify(value))
+    try {
+      const data = await getData();
+      // console.log("Data:", JSON.stringify(data))
+      if (data) {
+        const dataArray = JSON.parse(data);
+        // console.log(dataArray)
+        dataArray.push(value);
+        const JSONValue = JSON.stringify(dataArray);
+        await AsyncStorage.setItem('data', JSONValue);
+        console.log('data updated')
+      } else {
+        const JSONValue = JSON.stringify([value]);
+        await AsyncStorage.setItem('data', JSONValue);
+        console.log('new data uploaded')
+
+      }
+    } catch (e) {
+
+    }
+  }
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     }
   }, [closeForm])
-
-
-  // const handleShowForm = () => {
-  //   Animated.timing(formOpacity, {
-  //     toValue: 0,
-  //     duration: 100,
-  //     useNativeDriver: true,
-  //   }).start();
-  //   setShowForm(false)
-  // }
 
   return (
     <Animated.View style={[
@@ -90,7 +125,10 @@ const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowFo
             styles.button,
             { opacity: task.trim().length > 0 ? 1 : 0.5 }
           ]}
-          onPress={() => console.log(`${task}: ${timeToSubmit}`)}
+          onPress={async () => {
+            await storeData({ [task]: timeToSubmit });
+            closeForm();
+          }}
         >
           <Text style={styles.buttonText}>Submit</Text>
         </Pressable>
@@ -101,7 +139,6 @@ const EntryForm: React.FC<EntryFormProps> = ({ timeToSubmit, showForm, setShowFo
 
 const styles = StyleSheet.create({
   formContainer: {
-    // backgroundColor: "red",
     backgroundColor: "rgba(230, 237, 246, 1)",
     position: "absolute",
     zIndex: 10,
@@ -117,7 +154,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(55, 58, 63, 0.2)"
   },
   buttonText: {
-    // color: "white",
     color: "rgba(55, 58, 63, 1)",
     fontSize: 24,
     fontFamily: "Inter",

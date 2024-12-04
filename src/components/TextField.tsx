@@ -15,7 +15,7 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChangeText }) => 
   })
 
   const handleBorder = () => {
-    console.log(focused)
+    // console.log(focused)
     Animated.timing(borderOpacity, {
       toValue: focused ? 0.2 : 0.9,
       duration: 100,

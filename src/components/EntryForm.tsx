@@ -52,14 +52,14 @@ const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, show
 
   const TEST_DATE = new Date(date.setDate(date.getDate() + 1));
   const TEST_DATE_ID: string = TEST_DATE.toISOString().slice(0, 10)
-  console.log(TEST_DATE_ID)
+  // console.log(TEST_DATE_ID)
 
   const storeData = async (value: Object) => {
     try {
       if (data) {
         // console.log('there is data')
         const dataObj: DataObject = { ...data };
-        console.log("dataObj:", dataObj)
+        // console.log("dataObj:", dataObj)
         const dateArray: Object[] = dataObj[dateID as keyof Object];
         if (dateArray) {
           dateArray.push(value);

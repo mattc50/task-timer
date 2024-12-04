@@ -19,10 +19,9 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // const [data, setData] = useState<Object>({})
   const [dates, setDates] = useState<string[]>([])
 
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
 
   const closeList = () => {
     Animated.timing(listOpacity, {
@@ -39,23 +38,10 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
     try {
       const JSONValue = JSON.stringify(value);
       await AsyncStorage.setItem('data', JSONValue);
-      // console.log('data updated')
     } catch (e) {
 
     }
   }
-
-  // const getData = async () => {
-  //   try {
-  //     const value = await AsyncStorage.getItem('data');
-  //     if (value !== null) {
-  //       console.log(value)
-  //       return value;
-  //     }
-  //   } catch (e) {
-
-  //   }
-  // }
 
   const removeData = async (key: any) => {
     try {
@@ -68,8 +54,7 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
   }
 
   const removeItem = async (date: string, item: string, index: number) => {
-    setLoading(true);
-    // console.log('testing remove')
+    // setLoading(true);
     const dataObj = { ...data }
     const dateArray = dataObj[date];
     const modifiedArray = dateArray;
@@ -80,11 +65,11 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
     }
 
     setData(modifiedData);
-    console.log(modifiedData)
+    // console.log(modifiedData)
     setDates(Object.keys(modifiedData))
 
     await storeData(modifiedData);
-    setLoading(false);
+    // setLoading(false);
   }
 
   const renderDate = (date: string) => {
@@ -96,23 +81,12 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
   }
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   setLoading(true);
-    //   const data = await getData();
-    //   console.log(data);
     if (data) {
       const dataJSON = data;
-      // setData(dataJSON);
       setDates(Object.keys(dataJSON));
     }
-    setLoading(false)
-    // }
-
-    // fetchData();
+    // setLoading(false)
   }, [data])
-
-  // console.log(data);
-  // console.log(dates);
 
   return (
     <ModalScreen
@@ -134,10 +108,10 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
           </Pressable>
         </View>
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 16 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80, flex: 1 }}
           keyboardShouldPersistTaps='handled'
         >
-          {dates.map((date, index) => {
+          {dates.length > 0 && dates.map((date, index) => {
             return (
               <View key={index} style={{ marginBottom: 24 }}>
                 <Text style={styles.date}>
@@ -161,6 +135,16 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
               </View>
             )
           })}
+          {dates.length === 0 &&
+            <View style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              <Text style={styles.placeholder}>No times added yet</Text>
+            </View>
+          }
         </ScrollView>
       </View>
     </ModalScreen>
@@ -196,7 +180,14 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     letterSpacing: 1,
     textAlign: "center"
-  }
+  },
+  placeholder: {
+    color: "rgba(55, 58, 63, 0.5)",
+    fontSize: 24,
+    fontFamily: "Inter",
+    fontWeight: "300",
+    letterSpacing: 1,
+  },
 })
 
 export default TimesList;

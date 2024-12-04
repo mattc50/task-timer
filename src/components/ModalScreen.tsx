@@ -53,7 +53,8 @@ const ModalScreen: React.FC<EntryFormProps> = ({ modalOpacity, showModal, setSho
       {
         top: insets.top,
         opacity: modalOpacity,
-        paddingTop: insets.top + 48,
+        paddingTop: 16
+        // paddingTop: insets.top + 48,
       }
     ]}>
       {children}

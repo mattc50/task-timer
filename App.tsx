@@ -77,7 +77,7 @@ function App(): React.JSX.Element {
       if (time > 0) {
         setToastDisplay(true);
         timerTimeoutRef.current = setTimeout(() => {
-          console.log('will hide toast')
+          // console.log('will hide toast')
           setToastDisplay(false);
           timerTimeoutRef.current = null;
         }, 5000);
@@ -193,7 +193,6 @@ function App(): React.JSX.Element {
     try {
       const value = await AsyncStorage.getItem('data');
       if (value !== null) {
-        // console.log(value)
         return value;
       }
     } catch (e) {
@@ -213,7 +212,7 @@ function App(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
-    console.log('run effect');
+    // console.log('run effect');
   }, [data])
 
   return (
@@ -230,7 +229,8 @@ function App(): React.JSX.Element {
             display: "flex",
             flex: 1,
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            paddingBottom: 48
           }}>
             <Time
               timeScale={timeScale}

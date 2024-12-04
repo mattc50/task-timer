@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Animated, Dimensions, Pressable, StyleSheet, Text, TouchableOpacity } from "react-native"
+import { Animated, Dimensions, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { formatTime } from "../utils/formatTime"
 
@@ -45,8 +45,12 @@ const Toast: React.FC<ToastProps> = ({ time, toastDisplay, setShowForm }) => {
     ]}>
       <Pressable
         onPress={() => setShowForm(true)}
+        style={styles.toastContent}
       >
-        <Text style={styles.text}>Your time was: {formatTime(time)}</Text>
+        <Text style={styles.text}>Recorded time: {formatTime(time)}</Text>
+        <View pointerEvents="none" style={styles.button}>
+          <Text style={styles.buttonText}>Add</Text>
+        </View>
       </Pressable>
     </Animated.View>
   )
@@ -58,11 +62,38 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(55, 58, 63, 0.9)',
     padding: 16,
     marginHorizontal: 16,
-    borderRadius: 8
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)'
+  },
+  toastContent: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
   },
   text: {
+    fontFamily: "Inter",
     color: "white",
-    fontWeight: "500"
+    fontWeight: "500",
+    letterSpacing: 0.4,
+    fontSize: 16
+  },
+  button: {
+    borderRadius: 8,
+    backgroundColor: "rgb(230, 237, 246)",
+    height: 48,
+    width: 64,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  buttonText: {
+    fontWeight: "600",
+    fontSize: 16,
+    letterSpacing: 0.4,
+    color: 'rgba(55, 58, 63, 1)'
   }
 })
 

@@ -43,26 +43,6 @@ const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, show
     ]
   }
 
-  // const getData = async (key: string = 'data') => {
-  //   try {
-  //     const value = await AsyncStorage.getItem(key);
-  //     if (value !== null) return value;
-  //   } catch (e) {
-
-  //   }
-  // }
-
-  // const getAllData = async () => {
-  //   try {
-  //     const data = await AsyncStorage.getAllKeys();
-  //     for (let key in data) {
-  //       getData(key)
-  //     }
-  //   } catch (e) {
-
-  //   }
-  // }
-
   const date = new Date(Date.now());
   const dateID: string = date.toISOString().slice(0, 10)
 
@@ -72,23 +52,18 @@ const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, show
 
   const storeData = async (value: Object) => {
     try {
-      // const data = await getData();
-
-      console.log(data)
       if (data) {
-        console.log('there is data')
+        // console.log('there is data')
         const dataObj: Object = { ...data };
-        // console.log(dataObj);
         const dateArray: Object[] = dataObj[dateID];
         if (dateArray) {
           dateArray.push(value);
         } else {
           dataObj[dateID] = [value];
         }
-        // console.log(dataObj);
         const JSONValue = JSON.stringify(dataObj);
         await AsyncStorage.setItem('data', JSONValue);
-        console.log('data updated')
+        // console.log('data updated')
         setData(dataObj)
       } else {
         const dataToStore = {
@@ -96,49 +71,14 @@ const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, show
             value
           ]
         }
-        // console.log(dataToStore)
         const JSONValue = JSON.stringify(dataToStore);
         await AsyncStorage.setItem('data', JSONValue);
-        console.log('new data uploaded')
+        // console.log('new data uploaded')
       }
     } catch (e) {
 
     }
   }
-
-  // const removeData = async (key: any) => {
-  //   try {
-  //     await AsyncStorage.removeItem(key);
-  //     return true;
-  //   }
-  //   catch (exception) {
-  //     return false;
-  //   }
-  // }
-
-  // const removeAll = async () => {
-  //   const data = await getData();
-  //   if (data) {
-  //     console.log(data);
-  //     const dataJSON = JSON.parse(data);
-  //     console.log(dataJSON)
-  //     const keys = Object.keys(dataJSON);
-  //     console.log(keys);
-  //     for (let i = 0; i < keys.length; i++) {
-  //       dataJSON.pop();
-  //     }
-  //     console.log(dataJSON);
-  //     // await AsyncStorage.setItem('data', JSON.stringify(dataJSON));
-  //     // removeData(key);
-  //   }
-  // }
-
-  // const resetData = async () => {
-  //   await AsyncStorage.setItem('data', JSON.stringify({}));
-  // }
-
-  // removeAll();
-  // resetData();
 
   return (
     <ModalScreen
@@ -163,7 +103,7 @@ const EntryForm: React.FC<EntryFormProps> = ({ data, setData, timeToSubmit, show
           </Pressable>
         </View>
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 16 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 80 }}
           scrollEnabled={false}
           keyboardShouldPersistTaps='handled'
         >

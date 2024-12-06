@@ -79,7 +79,7 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
   const renderDate = (date: string) => {
     const dateObj = new Date(date);
     const month = dateObj.toLocaleString('default', { month: 'long' });
-    const day = dateObj.getDate();
+    const day = dateObj.getDate() + 1;
     const year = dateObj.getFullYear();
     return `${month} ${day}, ${year}`
   }

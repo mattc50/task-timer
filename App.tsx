@@ -9,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import {
   Animated,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -23,6 +24,7 @@ import EntryForm from './src/components/EntryForm';
 import TimesList from './src/components/TimesList';
 import ShowTimes from './src/components/ShowTimes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackgroundTimer from 'react-native-background-timer';
 
 type DataObject = {
   [key: string]: Object[]; // Date keys with arrays of objects
@@ -61,13 +63,24 @@ function App(): React.JSX.Element {
 
   const [data, setData] = useState<DataObject>({})
 
+  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+
   useEffect(() => {
-    let interval: NodeJS.Timeout | undefined;
+    // let interval: NodeJS.Timeout | undefined;
+    let interval: void;
+
+    const os = Platform.OS;
 
     if (pressed) {
-      interval = setInterval(() => {
-        setTime((time) => time + 1000);
-      }, 1000);
+      // interval = setInterval(() => {
+      //   setTime((time) => time + 1000);
+      // }, 1000);
+
+      // console.log('timer running:', true)
+      // setTimerRunning(true);
+      interval = BackgroundTimer.runBackgroundTimer(() => {
+        setTime((time => time + 1000))
+      }, 1000)
 
       setToastDisplay(false);
 
@@ -76,12 +89,12 @@ function App(): React.JSX.Element {
         timerTimeoutRef.current = null;
       }
     } else {
-      clearInterval(interval);
+      // clearInterval(interval);
+      BackgroundTimer.stopBackgroundTimer();
 
       if (time > 0) {
         setToastDisplay(true);
         timerTimeoutRef.current = setTimeout(() => {
-          // console.log('will hide toast')
           setToastDisplay(false);
           timerTimeoutRef.current = null;
         }, 5000);
@@ -91,7 +104,14 @@ function App(): React.JSX.Element {
       }
     }
     return () => {
-      if (interval) clearInterval(interval);
+      // if (interval) clearInterval(interval);
+
+      // if (timerRunning) {
+      if (pressed) {
+        BackgroundTimer.stopBackgroundTimer();
+        // console.log('timer running:', false)
+        // setTimerRunning(false);
+      }
       if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
   }, [pressed]);
@@ -227,6 +247,7 @@ function App(): React.JSX.Element {
             data={data}
             setData={setData}
             setShowList={setShowList}
+            pressed={pressed}
           />
           <View style={{
             // backgroundColor: "red",

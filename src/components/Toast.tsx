@@ -64,7 +64,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)'
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+    // shadowColor: 'rgb(40, 48, 87)',
+    // shadowOpacity: 0.2,
+    // shadowRadius: 8,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4
+    // }
   },
   toastContent: {
     width: "100%",

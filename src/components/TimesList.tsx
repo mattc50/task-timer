@@ -69,7 +69,6 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
     }
 
     setData(modifiedData);
-    // console.log(modifiedData)
     setDates(Object.keys(modifiedData))
 
     await storeData(modifiedData);

@@ -1,18 +1,63 @@
-import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native"
+import { useEffect, useRef, useState } from "react";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native"
 
 interface ShowTimesProps {
   data: DataObject,
   setData: Function,
-  setShowList: Function
+  setShowList: Function,
+  pressed: boolean
 }
 
 type DataObject = {
   [key: string]: Object[]; // Date keys with arrays of objects
 };
 
-const ShowTimes: React.FC<ShowTimesProps> = ({ data, setData, setShowList }) => {
+const ShowTimes: React.FC<ShowTimesProps> = ({ data, setData, setShowList, pressed }) => {
   const [count, setCount] = useState<Object>({})
+
+  const timeCountOpacity = useRef(new Animated.Value(1)).current;
+
+  const [timeCountDisplay, setTimeCountDisplay] = useState<boolean>(true);
+  const timeCountTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+
+  // useEffect(() => {
+  //   console.log(timerRunning)
+  //   Animated.timing(timeCountOpacity, {
+  //     toValue: timerRunning ? 0 : 1,
+  //     duration: 100,
+  //     delay: timerRunning ? 100 : 0,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }, [])
+
+  // useEffect(() => {
+
+  // }, [pressed])
+
+  useEffect(() => {
+    if (pressed) {
+      timeCountTimeoutRef.current = setTimeout(() => {
+        setTimeCountDisplay(false);
+        timeCountTimeoutRef.current = null;
+      }, 100);
+    } else {
+      setTimeCountDisplay(true);
+      if (timeCountTimeoutRef.current) {
+        clearTimeout(timeCountTimeoutRef.current);
+        timeCountTimeoutRef.current = null;
+      }
+    }
+    Animated.timing(timeCountOpacity, {
+      toValue: timeCountDisplay && pressed ? 0 : 1,
+      duration: 100,
+      // delay: timeCountDisplay ? 100 : 0,
+      useNativeDriver: true,
+    }).start();
+    return () => {
+      if (timeCountTimeoutRef.current) clearTimeout(timeCountTimeoutRef.current);
+    }
+  }, [pressed]);
 
   useEffect(() => {
     let count = 0;
@@ -28,23 +73,29 @@ const ShowTimes: React.FC<ShowTimesProps> = ({ data, setData, setShowList }) => 
   }, [data])
 
   return (
-    <View style={{
-      width: "100%",
-      paddingHorizontal: 16,
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "flex-start",
-    }}>
-      <Pressable
-        style={styles.timesDisplay}
-        onPress={() => setShowList(true)}
-      >
-        <Text style={styles.text}>Times</Text>
-        <View style={styles.count}>
-          <Text style={[styles.text, { marginTop: -1, textAlign: "center" }]}>{`${count}`}</Text>
-        </View>
-      </Pressable>
-    </View >
+    <View style={{ height: 56, display: "flex", flexDirection: "row" }}>
+      {/* {!timerRunning && <Animated.View style={{ */}
+      {timeCountDisplay && <Animated.View style={{
+        opacity: timeCountOpacity,
+        width: "100%",
+        paddingHorizontal: 16,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-start",
+      }}>
+        <Pressable
+          disabled={pressed}
+          style={styles.timesDisplay}
+          onPress={() => setShowList(true)}
+        >
+          <Text style={styles.text}>Times</Text>
+          <View style={styles.count}>
+            <Text style={[styles.text, { marginTop: -1, textAlign: "center" }]}>{`${count}`}</Text>
+          </View>
+        </Pressable>
+      </Animated.View>}
+      {/* </Animated.View>} */}
+    </View>
   )
 }
 

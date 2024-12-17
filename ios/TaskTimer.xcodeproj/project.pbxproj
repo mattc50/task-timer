@@ -15,6 +15,7 @@
 		2B3F2123CBA9B6E912728829 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		7699B88040F8A987B510C191 /* libPods-TaskTimer-TaskTimerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-TaskTimer-TaskTimerTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		87ED35232D11C5B900EC1C3E /* TaskTimer Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87ED35222D11C5B900EC1C3E /* TaskTimer Launch Screen.storyboard */; };
 		90C48590FF24478FAA1A1831 /* InterVariable-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 82C1DD1C72114111881AF9F4 /* InterVariable-Italic.ttf */; };
 		9FCCF88C126248EEB1F12BF1 /* InterVariable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FE88D711723546E0A8CC127F /* InterVariable.ttf */; };
 /* End PBXBuildFile section */
@@ -46,10 +47,11 @@
 		5B7EB9410499542E8C5724F5 /* Pods-TaskTimer-TaskTimerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskTimer-TaskTimerTests.debug.xcconfig"; path = "Target Support Files/Pods-TaskTimer-TaskTimerTests/Pods-TaskTimer-TaskTimerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-TaskTimer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TaskTimer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = TaskTimer/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		82C1DD1C72114111881AF9F4 /* InterVariable-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "InterVariable-Italic.ttf"; path = "../assets/fonts/InterVariable-Italic.ttf"; sourceTree = "<group>"; };
+		82C1DD1C72114111881AF9F4 /* InterVariable-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InterVariable-Italic.ttf"; path = "../assets/fonts/InterVariable-Italic.ttf"; sourceTree = "<group>"; };
+		87ED35222D11C5B900EC1C3E /* TaskTimer Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "TaskTimer Launch Screen.storyboard"; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-TaskTimer-TaskTimerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaskTimer-TaskTimerTests.release.xcconfig"; path = "Target Support Files/Pods-TaskTimer-TaskTimerTests/Pods-TaskTimer-TaskTimerTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FE88D711723546E0A8CC127F /* InterVariable.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = InterVariable.ttf; path = ../assets/fonts/InterVariable.ttf; sourceTree = "<group>"; };
+		FE88D711723546E0A8CC127F /* InterVariable.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = InterVariable.ttf; path = ../assets/fonts/InterVariable.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				87ED35222D11C5B900EC1C3E /* TaskTimer Launch Screen.storyboard */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
@@ -110,7 +113,6 @@
 				FE88D711723546E0A8CC127F /* InterVariable.ttf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -263,6 +265,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				2B3F2123CBA9B6E912728829 /* PrivacyInfo.xcprivacy in Resources */,
 				90C48590FF24478FAA1A1831 /* InterVariable-Italic.ttf in Resources */,
+				87ED35232D11C5B900EC1C3E /* TaskTimer Launch Screen.storyboard in Resources */,
 				9FCCF88C126248EEB1F12BF1 /* InterVariable.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -487,8 +490,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TVF29H4RP4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TaskTimer/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Task Timer";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -515,7 +521,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TVF29H4RP4;
 				INFOPLIST_FILE = TaskTimer/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Task Timer";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -607,10 +616,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -683,10 +689,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

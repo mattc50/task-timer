@@ -50,7 +50,6 @@ function App(): React.JSX.Element {
   const DURATION = 1000;
 
   const [time, setTime] = useState<number>(0);
-  const [startTime, setStartTime] = useState<string>("");
   const [lastTime, setLastTime] = useState<number>(0);
 
   const timeOpacity = useRef(new Animated.Value(0.6)).current;
@@ -65,8 +64,6 @@ function App(): React.JSX.Element {
 
   const [data, setData] = useState<DataObject>({})
 
-  const [timerRunning, setTimerRunning] = useState<boolean>(false);
-
   const differenceInSeconds = (date1: Date, date2: Date) => {
     const diffInMilliseconds = date2.getTime() - date1.getTime();
     console.log(diffInMilliseconds)
@@ -76,54 +73,22 @@ function App(): React.JSX.Element {
   const startTimer = async () => {
     const currentTime = new Date(Date.now()); // Current timestamp in milliseconds
     await AsyncStorage.setItem('start_time', currentTime.toISOString());
-    // setTimerRunning(true);
   };
 
   useEffect(() => {
-
-    // let interval: NodeJS.Timeout | undefined;
-    // let interval: void;
-
-    const os = Platform.OS;
+    // const os = Platform.OS;
 
     if (pressed) {
-      // const start: string = new Date(Date.now()).toISOString();
-      // setStartTime(start);
       startTimer();
-
-      // interval = setInterval(() => {
-      //   setTime((time) => time + 1000);
-      // }, 1000);
-
-      // console.log('timer running:', true)
-      // setTimerRunning(true);
-
-
-      // BackgroundTimer.runBackgroundTimer(async () => {
-      //   // interval = setInterval(async () => {
-      //   // setTime((time => time + 1000))
-      //   const start = await AsyncStorage.getItem('start_time');
-      //   console.log(start);
-      //   if (start) {
-      //     const now = new Date(Date.now());
-      //     console.log(now)
-      //     const diff = differenceInSeconds(new Date(Date.parse(start)), now);
-      //     console.log(diff);
-      //     setTime(diff);
-      //   }
-      // }, 1000)
 
       const fetchStartTime = async () => {
         const startTime = await AsyncStorage.getItem('start_time');
         if (startTime) {
-          // setTimerRunning(true);
           BackgroundTimer.runBackgroundTimer(() => {
             const now = new Date(Date.now());
             const elapsedSeconds = differenceInSeconds(new Date(Date.parse(startTime)), now);
-            // const elapsedSeconds = now - parseInt(startTime, 10);
             console.log(elapsedSeconds)
             setTime(elapsedSeconds);
-            // console.log('tick')
           }, 10);
         }
       };
@@ -137,7 +102,6 @@ function App(): React.JSX.Element {
         timerTimeoutRef.current = null;
       }
     } else {
-      // clearInterval(interval);
       BackgroundTimer.stopBackgroundTimer();
 
       if (time > 0) {
@@ -152,15 +116,7 @@ function App(): React.JSX.Element {
       }
     }
     return () => {
-      // if (interval) clearInterval(interval);
-
-      // if (timerRunning) {
-
-      // if (pressed) {
       BackgroundTimer.stopBackgroundTimer();
-      // console.log('timer running:', false)
-      // setTimerRunning(false);
-      // }
 
       if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
@@ -169,7 +125,6 @@ function App(): React.JSX.Element {
   const handleStop = async () => {
     setPressed(false);
     await AsyncStorage.removeItem('start_time'); // Clear the start time
-    // setTimerRunning(false);
   }
 
   const makePressEffects = () => {
@@ -262,7 +217,6 @@ function App(): React.JSX.Element {
     if (pressed) {
       handleStop();
     } else {
-      // console.log('ran')
       startTimer();
     }
     setPressed(!pressed);
@@ -291,7 +245,6 @@ function App(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
-    // console.log('run effect');
   }, [data])
 
   return (
@@ -305,7 +258,6 @@ function App(): React.JSX.Element {
             pressed={pressed}
           />
           <View style={{
-            // backgroundColor: "red",
             display: "flex",
             flex: 1,
             justifyContent: "center",

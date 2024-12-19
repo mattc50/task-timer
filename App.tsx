@@ -50,7 +50,9 @@ function App(): React.JSX.Element {
   const DURATION = 1000;
 
   const [time, setTime] = useState<number>(0);
+  const [startTime, setStartTime] = useState<string>("");
   const [lastTime, setLastTime] = useState<number>(0);
+
   const timeOpacity = useRef(new Animated.Value(0.6)).current;
   const timeScale = useRef(new Animated.Value(1)).current;
 
@@ -65,22 +67,68 @@ function App(): React.JSX.Element {
 
   const [timerRunning, setTimerRunning] = useState<boolean>(false);
 
+  const differenceInSeconds = (date1: Date, date2: Date) => {
+    const diffInMilliseconds = date2.getTime() - date1.getTime();
+    console.log(diffInMilliseconds)
+    return Math.floor(diffInMilliseconds);
+  }
+
+  const startTimer = async () => {
+    const currentTime = new Date(Date.now()); // Current timestamp in milliseconds
+    await AsyncStorage.setItem('start_time', currentTime.toISOString());
+    // setTimerRunning(true);
+  };
+
   useEffect(() => {
+
     // let interval: NodeJS.Timeout | undefined;
-    let interval: void;
+    // let interval: void;
 
     const os = Platform.OS;
 
     if (pressed) {
+      // const start: string = new Date(Date.now()).toISOString();
+      // setStartTime(start);
+      startTimer();
+
       // interval = setInterval(() => {
       //   setTime((time) => time + 1000);
       // }, 1000);
 
       // console.log('timer running:', true)
       // setTimerRunning(true);
-      interval = BackgroundTimer.runBackgroundTimer(() => {
-        setTime((time => time + 1000))
-      }, 1000)
+
+
+      // BackgroundTimer.runBackgroundTimer(async () => {
+      //   // interval = setInterval(async () => {
+      //   // setTime((time => time + 1000))
+      //   const start = await AsyncStorage.getItem('start_time');
+      //   console.log(start);
+      //   if (start) {
+      //     const now = new Date(Date.now());
+      //     console.log(now)
+      //     const diff = differenceInSeconds(new Date(Date.parse(start)), now);
+      //     console.log(diff);
+      //     setTime(diff);
+      //   }
+      // }, 1000)
+
+      const fetchStartTime = async () => {
+        const startTime = await AsyncStorage.getItem('start_time');
+        if (startTime) {
+          // setTimerRunning(true);
+          BackgroundTimer.runBackgroundTimer(() => {
+            const now = new Date(Date.now());
+            const elapsedSeconds = differenceInSeconds(new Date(Date.parse(startTime)), now);
+            // const elapsedSeconds = now - parseInt(startTime, 10);
+            console.log(elapsedSeconds)
+            setTime(elapsedSeconds);
+            // console.log('tick')
+          }, 10);
+        }
+      };
+
+      fetchStartTime();
 
       setToastDisplay(false);
 
@@ -107,17 +155,21 @@ function App(): React.JSX.Element {
       // if (interval) clearInterval(interval);
 
       // if (timerRunning) {
-      if (pressed) {
-        BackgroundTimer.stopBackgroundTimer();
-        // console.log('timer running:', false)
-        // setTimerRunning(false);
-      }
+
+      // if (pressed) {
+      BackgroundTimer.stopBackgroundTimer();
+      // console.log('timer running:', false)
+      // setTimerRunning(false);
+      // }
+
       if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
   }, [pressed]);
 
-  const handleStop = () => {
+  const handleStop = async () => {
     setPressed(false);
+    await AsyncStorage.removeItem('start_time'); // Clear the start time
+    // setTimerRunning(false);
   }
 
   const makePressEffects = () => {
@@ -209,6 +261,9 @@ function App(): React.JSX.Element {
     ]).start();
     if (pressed) {
       handleStop();
+    } else {
+      // console.log('ran')
+      startTimer();
     }
     setPressed(!pressed);
   }

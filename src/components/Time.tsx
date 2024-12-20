@@ -39,18 +39,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "50%",
     left: "50%",
+    width: 280,
+    height: 60,
     zIndex: 2,
     transform: [
-      // { translateX: -100 }, { translateY: 30 }
-      { translateX: -156 }, { translateY: -28 }
-    ]
-  },
-  time: {
-    height: 60,
-    width: 200,
+      { translateX: -140 }, { translateY: -30 }
+    ],
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
+  },
+  time: {
+    display: "flex",
+    flexDirection: "row"
   },
   text: {
     fontSize: 48,

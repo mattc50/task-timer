@@ -264,11 +264,6 @@ function App(): React.JSX.Element {
             alignItems: "center",
             paddingBottom: 48
           }}>
-            <Time
-              timeScale={timeScale}
-              timeOpacity={timeOpacity}
-              time={time}
-            />
             <TimerButton
               fadeIn={fadeIn}
               fadeOut={fadeOut}
@@ -279,7 +274,13 @@ function App(): React.JSX.Element {
               activeRunningShadow={activeRunningShadow}
               scale={scale}
               bgInter={bgInter}
-            />
+            >
+              <Time
+                timeScale={timeScale}
+                timeOpacity={timeOpacity}
+                time={time}
+              />
+            </TimerButton>
           </View>
           <Toast
             time={lastTime}

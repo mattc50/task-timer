@@ -10,7 +10,8 @@ interface TimerButtonProps {
   runningShadow: AnimatableNumericValue
   activeRunningShadow: AnimatableNumericValue
   bgInter: any,
-  scale: AnimatableNumericValue
+  scale: AnimatableNumericValue,
+  children: React.JSX.Element
 }
 
 const TimerButton: React.FC<TimerButtonProps> = ({
@@ -23,6 +24,7 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   activeRunningShadow,
   bgInter,
   scale,
+  children
 }) => {
   return (
     <TouchableOpacity
@@ -123,6 +125,7 @@ const TimerButton: React.FC<TimerButtonProps> = ({
           </Svg>
         </View>
       </Animated.View>
+      {children}
     </TouchableOpacity>
   )
 }

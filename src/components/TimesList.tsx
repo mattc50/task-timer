@@ -111,14 +111,14 @@ const TimesList: React.FC<TimesListProps> = ({ data, setData, showList, setShowL
           </Pressable>
         </View>
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80, flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
           keyboardShouldPersistTaps='handled'
         >
           {dates.length > 0 && dates.map((date, index) => {
             const dataIndex: any = data[date as keyof DataObject];
 
             return (
-              <View key={index} style={{ marginBottom: 24 }}>
+              <View key={index}>
                 <Text style={styles.date}>
                   {renderDate(date)}
                 </Text>

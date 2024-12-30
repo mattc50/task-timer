@@ -117,13 +117,13 @@ function App(): React.JSX.Element {
     }
     return () => {
       BackgroundTimer.stopBackgroundTimer();
-
       if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
   }, [pressed]);
 
   const handleStop = async () => {
     setPressed(false);
+    BackgroundTimer.stopBackgroundTimer();
     await AsyncStorage.removeItem('start_time'); // Clear the start time
   }
 

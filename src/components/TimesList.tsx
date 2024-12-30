@@ -171,10 +171,13 @@ const styles = StyleSheet.create({
   name: {
     display: "flex",
     flex: 1,
-    textAlign: "left"
+    textAlign: "left",
   },
   time: {
     fontVariant: ["lining-nums", "tabular-nums"],
+    width: 111,
+    marginLeft: 16,
+    textAlign: "right"
   },
   text: {
     color: "rgba(55, 58, 63, 1)",
@@ -182,7 +185,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "300",
     letterSpacing: 1,
-    textAlign: "center"
   },
   placeholder: {
     color: "rgba(55, 58, 63, 0.5)",

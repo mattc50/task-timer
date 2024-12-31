@@ -1,14 +1,21 @@
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
- *
- * @format
- */
+*
+* @format
+*/
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs(true);//Ignore all log notifications
+LogBox.ignoreLogs([
+  'has a shadow set but cannot calculate shadow efficiently', // Match this part of the message
+]);
+console.warn = () => { };
 
 import React, { useEffect, useRef, useState } from 'react';
 
 import {
   Animated,
+  ImageBackground,
   Platform,
   Pressable,
   SafeAreaView,
@@ -25,10 +32,19 @@ import TimesList from './src/components/TimesList';
 import ShowTimes from './src/components/ShowTimes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackgroundTimer from 'react-native-background-timer';
+import LocationAndSun from './src/components/LocationAndSun';
+import ActionBar from './src/components/ActionBar';
+
 
 type DataObject = {
   [key: string]: Object[]; // Date keys with arrays of objects
 };
+
+const COLORS = {
+  image1: "rgb(103, 101, 126)",
+  image4: "rgb(127, 159, 255)"
+}
+const NATIVE_DRIVER = true;
 
 function App(): React.JSX.Element {
   const [held, setHeld] = useState(false);
@@ -42,7 +58,13 @@ function App(): React.JSX.Element {
   const bg = useRef(new Animated.Value(0)).current;
   const bgInter = bg.interpolate({
     inputRange: [0, 1],
-    outputRange: ["rgb(230, 237, 246)", "rgb(234, 197, 191)"]
+    // outputRange: ["rgb(230, 237, 246)", "rgb(234, 197, 191)"]
+    outputRange: ["rgb(230, 237, 246)", COLORS.image4]
+    // outputRange: [0, 0.25]
+  })
+  const opacityInter = bg.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 0.75]
   })
 
   const scale = useRef(new Animated.Value(1.06)).current;
@@ -63,6 +85,17 @@ function App(): React.JSX.Element {
   const [showList, setShowList] = useState<boolean>(false);
 
   const [data, setData] = useState<DataObject>({})
+
+  const images = {
+    image1: require('./assets/sunrise1.jpg'),
+    image2: require('./assets/sunrise2.jpg'),
+    image3: require('./assets/sunrise3.jpg'),
+    image4: require('./assets/sunrise4.jpg'),
+    image5: require('./assets/sunset1.jpg'),
+    image6: require('./assets/sunset2.jpg'),
+    image7: require('./assets/sunset3.jpg'),
+    image8: require('./assets/sunset4.jpg')
+  }
 
   const differenceInSeconds = (date1: Date, date2: Date) => {
     const diffInMilliseconds = date2.getTime() - date1.getTime();
@@ -89,7 +122,7 @@ function App(): React.JSX.Element {
             const elapsedSeconds = differenceInSeconds(new Date(Date.parse(startTime)), now);
             console.log(elapsedSeconds)
             setTime(elapsedSeconds);
-          }, 10);
+          }, 100);
         }
       };
 
@@ -132,12 +165,12 @@ function App(): React.JSX.Element {
       Animated.timing(timeOpacity, {
         toValue: held ? 0.6 : 0.5,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(timeScale, {
         toValue: held ? 1 : pressed ? 0.985 : 0.99,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       })
     ]).start();
   }
@@ -149,17 +182,17 @@ function App(): React.JSX.Element {
       Animated.timing(el, {
         toValue: 0,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(scale, {
         toValue: 1.06,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(shadow, {
         toValue: 1,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       })
     ]).start();
     makePressEffects();
@@ -173,18 +206,18 @@ function App(): React.JSX.Element {
     Animated.timing(el, {
       toValue: val,
       duration: DURATION,
-      useNativeDriver: true,
+      useNativeDriver: NATIVE_DRIVER,
     }).start();
     Animated.parallel([
       Animated.timing(scale, {
         toValue: 1.06,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(shadow, {
         toValue: 0,
         duration: DURATION / 1.75,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       })
     ]).start();
     makePressEffects();
@@ -196,24 +229,29 @@ function App(): React.JSX.Element {
       Animated.timing(initialBtn, {
         toValue: pressed ? 1 : 0,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(activeRunningShadow, {
         toValue: pressed ? 0 : 1,
-        duration: DURATION,
-        useNativeDriver: true,
+        duration: DURATION / 10,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(runningShadow, {
         toValue: 0,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       }),
       Animated.timing(bg, {
         toValue: pressed ? 0 : 1,
         duration: DURATION,
-        useNativeDriver: true,
+        useNativeDriver: NATIVE_DRIVER,
       })
     ]).start();
+    // Animated.timing(bg, {
+    //   toValue: pressed ? 0 : 1,
+    //   duration: DURATION,
+    //   useNativeDriver: false,
+    // }).start();
     if (pressed) {
       handleStop();
     } else {
@@ -249,11 +287,18 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaProvider>
-      <Animated.View style={[styles.container, { backgroundColor: bgInter }]}>
+      <Animated.View style={[
+        styles.container,
+        // { backgroundColor: bgInter }
+        { backgroundColor: "rgb(230, 237, 246)" }
+      ]}>
+        <Animated.View style={{ opacity: opacityInter, position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+          <ImageBackground source={images.image4} style={{ width: "100%", height: "100%" }} />
+        </Animated.View>
         <SafeAreaView style={styles.parent}>
-          <ShowTimes
+          <ActionBar
             data={data}
-            setData={setData}
+            // setData={setData}
             setShowList={setShowList}
             pressed={pressed}
           />
@@ -279,6 +324,7 @@ function App(): React.JSX.Element {
                 timeScale={timeScale}
                 timeOpacity={timeOpacity}
                 time={time}
+                pressed={pressed}
               />
             </TimerButton>
           </View>
@@ -302,7 +348,7 @@ function App(): React.JSX.Element {
           />}
         </SafeAreaView>
       </Animated.View>
-    </SafeAreaProvider>
+    </SafeAreaProvider >
   )
 }
 
@@ -315,7 +361,7 @@ const styles = StyleSheet.create({
   },
   container: {
     display: "flex",
-    flex: 1
+    flex: 1,
   },
 });
 

@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { AnimatableNumericValue, Animated, StyleSheet, TouchableOpacity, View } from "react-native"
 import { Defs, Path, RadialGradient, Stop, Svg } from "react-native-svg"
 
@@ -5,12 +6,12 @@ interface TimerButtonProps {
   fadeIn: Function,
   fadeOut: Function,
   togglePress: Function,
-  initialBtn: AnimatableNumericValue
-  activeShadow: AnimatableNumericValue
-  runningShadow: AnimatableNumericValue
-  activeRunningShadow: AnimatableNumericValue
+  initialBtn: Animated.Value
+  activeShadow: Animated.Value
+  runningShadow: Animated.Value
+  activeRunningShadow: Animated.Value
   bgInter: any,
-  scale: AnimatableNumericValue,
+  scale: Animated.Value,
   children: React.JSX.Element
 }
 
@@ -49,8 +50,8 @@ const TimerButton: React.FC<TimerButtonProps> = ({
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_4_13)" />
             <Defs>
               <RadialGradient id="paint0_radial_4_13" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 110) rotate(90) scale(162)">
-                <Stop offset="0.828694" stopColor="#283057" stopOpacity="0" />
-                <Stop offset="1" stopColor="#283057" stopOpacity="0.08" />
+                <Stop offset="0.828694" stopColor="rgb(40,48,87)" stopOpacity="0" />
+                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.08" />
               </RadialGradient>
             </Defs>
           </Svg>
@@ -63,8 +64,8 @@ const TimerButton: React.FC<TimerButtonProps> = ({
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_37)" />
             <Defs>
               <RadialGradient id="paint0_radial_39_37" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop offset="0.863394" stopColor="#4D2B26" stopOpacity="0" />
-                <Stop offset="1" stopColor="#4D2B26" stopOpacity="0.1" />
+                <Stop offset="0.863394" stopColor="rgb(40,48,87)" stopOpacity="0" />
+                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
@@ -72,54 +73,54 @@ const TimerButton: React.FC<TimerButtonProps> = ({
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_38)" />
             <Defs>
               <RadialGradient id="paint0_radial_39_38" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop stopColor="#ECC9C4" stopOpacity="0" />
-                <Stop offset="1" stopColor="#ECC9C4" stopOpacity="0.4" />
+                <Stop stopColor="rgb(40,48,87)" stopOpacity="0" />
+                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
         </View>
       </Animated.View>
-      <Animated.View style={[styles.shadowElement, { opacity: activeShadow, transform: [{ scale: scale }] }]}>
+      <Animated.View style={[styles.shadowElement, { opacity: activeShadow, transform: [{ scale: 1.025 }] }]}>
         <Animated.View style={[styles.shadowElement, styles.shadow3, { backgroundColor: bgInter }]}></Animated.View>
         <View style={styles.shadowElement}>
-          <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
+          <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_25)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_25" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 152) rotate(90) scale(128)">
-                <Stop offset="0.755" stopColor="#283057" stopOpacity="0" />
-                <Stop offset="1" stopColor="#283057" stopOpacity="0.1" />
+                <Stop offset="0.755" stopColor="rgb(40,48,87)" stopOpacity="0" />
+                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
-          <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
+          <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_26)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_26" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop offset="0.89" stopColor={"#E6EDF6"} stopOpacity="0" />
-                <Stop offset="1" stopColor={"#E6EDF6"} />
+                <Stop offset="0.89" stopColor="#E6EDF6" stopOpacity="0" />
+                <Stop offset="1" stopColor="#E6EDF6" />
               </RadialGradient>
             </Defs>
           </Svg>
         </View>
       </Animated.View>
-      <Animated.View style={[styles.shadowElement, { opacity: runningShadow, transform: [{ scale: scale }] }]}>
+      <Animated.View style={[styles.shadowElement, { opacity: runningShadow, transform: [{ scale: 1.025 }] }]}>
         <Animated.View style={[styles.shadowElement, styles.shadow5, { backgroundColor: bgInter }]}></Animated.View>
         <View style={styles.shadowElement}>
-          <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
+          <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_25)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_25" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 152) rotate(90) scale(128)">
-                <Stop offset="0.755" stopColor="#4D2B26" stopOpacity="0" />
-                <Stop offset="1" stopColor="#4D2B26" stopOpacity="0.1" />
+                <Stop offset="0.755" stopColor="rgb(40,48,87)" stopOpacity="0" />
+                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
-          <Svg width="280" height="273" viewBox="0 0 280 273" fill="none" style={styles.svg}>
+          <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_26)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_26" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop offset="0.89" stopColor={"#ECC9C4"} stopOpacity="0" />
-                <Stop offset="1" stopColor={"#ECC9C4"} />
+                <Stop offset="0.89" stopColor="rgb(40,48,87)" stopOpacity="0" />
+                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
@@ -136,6 +137,7 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
+    zIndex: 2,
   },
   shadowElement: {
     position: "absolute",
@@ -152,24 +154,24 @@ const styles = StyleSheet.create({
     shadowRadius: 100
   },
   shadow2: {
-    shadowColor: "rgb(40, 48, 87)",
+    shadowColor: "#283057",
     shadowOffset: { width: 0, height: 32 },
     shadowOpacity: 0.2,
     shadowRadius: 24
   },
   shadow3: {
-    shadowColor: "rgb(77, 43, 38)",
+    shadowColor: "#283057",
     shadowOpacity: 0.04,
     shadowRadius: 60
   },
   shadow4: {
-    shadowColor: "rgb(40, 48, 87)",
+    shadowColor: "#283057",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 28
   },
   shadow5: {
-    shadowColor: "rgb(77, 43, 38)",
+    shadowColor: "#283057",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 28

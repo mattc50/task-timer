@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AnimatableNumericValue, Animated, StyleSheet, TouchableOpacity, View } from "react-native"
 import { Defs, Path, RadialGradient, Stop, Svg } from "react-native-svg"
 
@@ -12,7 +12,24 @@ interface TimerButtonProps {
   activeRunningShadow: Animated.Value
   bgInter: any,
   scale: Animated.Value,
-  children: React.JSX.Element
+  children: React.JSX.Element,
+  pressed: boolean
+  test?: boolean
+  nextColor: Animated.Value
+  nextColorInter: any
+}
+
+const RGB = "0, 6, 35";
+
+const COLORS = {
+  image1: "rgb(51, 48, 81)",
+  image2: "rgb(82, 57, 55)",
+  image3: "rgb(79, 79, 129)",
+  image4: "rgb(83, 126, 255)",
+  image5: "rgb(74, 88, 244)",
+  image6: "rgb(76, 70, 126)",
+  image7: "rgb(84, 49, 68)",
+  image8: "rgb(12, 22, 69)",
 }
 
 const TimerButton: React.FC<TimerButtonProps> = ({
@@ -25,8 +42,69 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   activeRunningShadow,
   bgInter,
   scale,
-  children
+  children,
+  pressed,
+  test,
+  nextColor,
+  nextColorInter
 }) => {
+  const [currentColor, setCurrentColor] = useState<Animated.Value>(bgInter);
+  const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+
+  const timeColor = useRef(new Animated.Value(0)).current;
+  const initialColor = COLORS.image1
+  console.log("COlor:", nextColorInter)
+
+  const timeColorInter = timeColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: [bgInter, COLORS.image2]
+  })
+
+  timeColorInter.addListener(({ value }) => {
+    console.log("Raw value:", value);
+  });
+
+  // const [BACKGROUND, setBackground] = useState<string>(typeof color === 'string' ? color : bgInter)
+
+  // const BACKGROUND = typeof color === 'string' ? color : bgInter;
+  const BACKGROUND = bgInter;
+
+  const transitionColor = () => {
+    console.log('transitioning')
+    Animated.timing(nextColor, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true
+    }).start()
+  }
+
+  useEffect(() => {
+    // setBackground(typeof color === 'string' ? color : bgInter)
+    if (test) {
+      console.log("effect ran")
+      transitionColor();
+    }
+  }, [test])
+
+  useEffect(() => {
+    if (pressed) {
+      colorTimeoutRef.current = setTimeout(() => {
+        setCurrentColor(nextColorInter)
+        // setTimeColor("rgb(211, 222, 244)")
+      }, 1000)
+    } else {
+      // if (colorTimeoutRef.current) {
+      //   clearTimeout(colorTimeoutRef.current);
+      //   colorTimeoutRef.current = null;
+      // }
+      setCurrentColor(bgInter)
+    }
+    return () => {
+      if (colorTimeoutRef.current) clearTimeout(colorTimeoutRef.current);
+    }
+  }, [pressed])
+
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -34,9 +112,20 @@ const TimerButton: React.FC<TimerButtonProps> = ({
       onPressOut={() => { fadeOut() }}
       onPress={() => { togglePress() }}
       style={styles.button}>
-      <Animated.View style={[styles.shadowElement, { opacity: initialBtn }]}>
-        <Animated.View style={[styles.shadowElement, styles.shadow1, { backgroundColor: bgInter }]}></Animated.View>
-        <Animated.View style={[styles.shadowElement, styles.shadow2, { backgroundColor: bgInter }]}>
+      <Animated.View style={[
+        styles.shadowElement,
+        { opacity: initialBtn }
+      ]}>
+        {!pressed && <Animated.View style={[
+          styles.shadowElement,
+          styles.shadow1,
+          { backgroundColor: currentColor }]
+        }></Animated.View>}
+        <Animated.View style={[
+          styles.shadowElement,
+          styles.shadow2,
+          { backgroundColor: currentColor }
+        ]}>
           <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_4_12)" />
             <Defs>
@@ -50,22 +139,32 @@ const TimerButton: React.FC<TimerButtonProps> = ({
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_4_13)" />
             <Defs>
               <RadialGradient id="paint0_radial_4_13" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 110) rotate(90) scale(162)">
-                <Stop offset="0.828694" stopColor="rgb(40,48,87)" stopOpacity="0" />
-                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.08" />
+                <Stop offset="0.828694" stopColor={`rgb(${RGB})`} stopOpacity="0" />
+                <Stop offset="1" stopColor={`rgb(${RGB})`} stopOpacity="0.08" />
               </RadialGradient>
             </Defs>
           </Svg>
         </Animated.View>
       </Animated.View>
-      <Animated.View style={[styles.shadowElement, { opacity: activeRunningShadow, transform: [{ scale: 1.025 }] }]}>
-        <Animated.View style={[styles.shadowElement, styles.shadow4, { backgroundColor: bgInter }]}></Animated.View>
+      <Animated.View style={[
+        styles.shadowElement,
+        {
+          opacity: activeRunningShadow,
+          transform: [{ scale: 1.025 }]
+        }
+      ]}>
+        <Animated.View style={[
+          styles.shadowElement,
+          styles.shadow4,
+          { backgroundColor: currentColor }
+        ]}></Animated.View>
         <View style={styles.shadowElement}>
           <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_37)" />
             <Defs>
               <RadialGradient id="paint0_radial_39_37" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop offset="0.863394" stopColor="rgb(40,48,87)" stopOpacity="0" />
-                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
+                <Stop offset="0.863394" stopColor={`rgb(${RGB})`} stopOpacity="0" />
+                <Stop offset="1" stopColor={`rgb(${RGB})`} stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
@@ -73,22 +172,32 @@ const TimerButton: React.FC<TimerButtonProps> = ({
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_39_38)" />
             <Defs>
               <RadialGradient id="paint0_radial_39_38" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop stopColor="rgb(40,48,87)" stopOpacity="0" />
-                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
+                <Stop stopColor={`rgb(${RGB})`} stopOpacity="0" />
+                <Stop offset="1" stopColor={`rgb(${RGB})`} stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
         </View>
       </Animated.View>
-      <Animated.View style={[styles.shadowElement, { opacity: activeShadow, transform: [{ scale: 1.025 }] }]}>
-        <Animated.View style={[styles.shadowElement, styles.shadow3, { backgroundColor: bgInter }]}></Animated.View>
+      <Animated.View style={[
+        styles.shadowElement,
+        {
+          opacity: activeShadow,
+          transform: [{ scale: 1.025 }]
+        }
+      ]}>
+        <Animated.View style={[
+          styles.shadowElement,
+          styles.shadow3,
+          { backgroundColor: currentColor }
+        ]}></Animated.View>
         <View style={styles.shadowElement}>
           <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_25)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_25" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 152) rotate(90) scale(128)">
-                <Stop offset="0.755" stopColor="rgb(40,48,87)" stopOpacity="0" />
-                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
+                <Stop offset="0.755" stopColor={`rgb(${RGB})`} stopOpacity="0" />
+                <Stop offset="1" stopColor={`rgb(${RGB})`} stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
@@ -103,15 +212,25 @@ const TimerButton: React.FC<TimerButtonProps> = ({
           </Svg>
         </View>
       </Animated.View>
-      <Animated.View style={[styles.shadowElement, { opacity: runningShadow, transform: [{ scale: 1.025 }] }]}>
-        <Animated.View style={[styles.shadowElement, styles.shadow5, { backgroundColor: bgInter }]}></Animated.View>
+      <Animated.View style={[
+        styles.shadowElement,
+        {
+          opacity: runningShadow,
+          transform: [{ scale: 1.025 }]
+        }
+      ]}>
+        <Animated.View style={[
+          styles.shadowElement,
+          styles.shadow5,
+          { backgroundColor: currentColor }
+        ]}></Animated.View>
         <View style={styles.shadowElement}>
           <Svg width="280" height="280" viewBox="0 0 280 280" fill="none" style={styles.svg}>
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_25)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_25" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 152) rotate(90) scale(128)">
-                <Stop offset="0.755" stopColor="rgb(40,48,87)" stopOpacity="0" />
-                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
+                <Stop offset="0.755" stopColor={`rgb(${RGB})`} stopOpacity="0" />
+                <Stop offset="1" stopColor={`rgb(${RGB})`} stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
@@ -119,13 +238,20 @@ const TimerButton: React.FC<TimerButtonProps> = ({
             <Path d="M140 280C217.32 280 280 217.32 280 140C280 62.6801 217.32 0 140 0C62.6801 0 0 62.6801 0 140C0 217.32 62.6801 280 140 280Z" fill="url(#paint0_radial_35_26)" />
             <Defs>
               <RadialGradient id="paint0_radial_35_26" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(140 140) rotate(90) scale(140)">
-                <Stop offset="0.89" stopColor="rgb(40,48,87)" stopOpacity="0" />
-                <Stop offset="1" stopColor="rgb(40,48,87)" stopOpacity="0.1" />
+                <Stop offset="0.89" stopColor={`rgb(${RGB})`} stopOpacity="0" />
+                <Stop offset="1" stopColor={`rgb(${RGB})`} stopOpacity="0.1" />
               </RadialGradient>
             </Defs>
           </Svg>
         </View>
       </Animated.View>
+      <Animated.View style={{
+        backgroundColor: bgInter,
+        height: 280,
+        width: 280,
+        borderRadius: 140,
+        zIndex: 2
+      }}></Animated.View>
       {children}
     </TouchableOpacity>
   )
@@ -137,7 +263,7 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    zIndex: 2,
+    // zIndex: 3,
   },
   shadowElement: {
     position: "absolute",
@@ -146,6 +272,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 140,
+    zIndex: 3
   },
   shadow1: {
     shadowColor: "rgb(255, 255, 255)",

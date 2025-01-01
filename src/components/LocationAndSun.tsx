@@ -25,6 +25,7 @@ const LocationAndSun = () => {
 
   const getLocation = async () => {
     // let location;
+    console.log("hello")
 
     const permission = await Geolocation.requestAuthorization("whenInUse");
     // const hasPermission = await hasLocationPermission();

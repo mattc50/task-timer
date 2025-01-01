@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     left: "50%",
     width: 280,
     height: 60,
-    zIndex: 2,
+    zIndex: 4,
     transform: [
       { translateX: -140 }, { translateY: -30 }
     ],

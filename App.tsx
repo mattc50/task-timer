@@ -4,7 +4,7 @@
 *
 * @format
 */
-import { LogBox } from 'react-native';
+import { Button, LogBox } from 'react-native';
 LogBox.ignoreAllLogs(true);//Ignore all log notifications
 LogBox.ignoreLogs([
   'has a shadow set but cannot calculate shadow efficiently', // Match this part of the message
@@ -34,6 +34,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackgroundTimer from 'react-native-background-timer';
 import LocationAndSun from './src/components/LocationAndSun';
 import ActionBar from './src/components/ActionBar';
+import SkyBackground from './src/components/SkyBackground';
 
 
 type DataObject = {
@@ -41,12 +42,25 @@ type DataObject = {
 };
 
 const COLORS = {
-  image1: "rgb(103, 101, 126)",
-  image4: "rgb(127, 159, 255)"
+  image1: "rgb(51, 48, 81)",
+  image2: "rgb(82, 57, 55)",
+  image3: "rgb(79, 79, 129)",
+  image4: "rgb(83, 126, 255)",
+  image5: "rgb(74, 88, 244)",
+  image6: "rgb(76, 70, 126)",
+  image7: "rgb(84, 49, 68)",
+  image8: "rgb(12, 22, 69)",
 }
 const NATIVE_DRIVER = true;
 
 function App(): React.JSX.Element {
+  const [test, setTest] = useState<boolean>(false);
+  // const buttonColor = useRef(new Animated.Value(0)).current;
+  // const buttonColorInter = buttonColor.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: [bgInter, COLORS.image2]
+  // })
+
   const [held, setHeld] = useState(false);
   const [pressed, setPressed] = useState(false);
 
@@ -59,12 +73,20 @@ function App(): React.JSX.Element {
   const bgInter = bg.interpolate({
     inputRange: [0, 1],
     // outputRange: ["rgb(230, 237, 246)", "rgb(234, 197, 191)"]
-    outputRange: ["rgb(230, 237, 246)", COLORS.image4]
+    outputRange: ["rgb(230, 237, 246)", COLORS.image1]
     // outputRange: [0, 0.25]
   })
-  const opacityInter = bg.interpolate({
+  // const transitionBgInter =
+
+  // const opacityInter = bg.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: [0, 0.75]
+  // })
+
+  const nextColor = useRef(new Animated.Value(0)).current;
+  const nextColorInter = nextColor.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 0.75]
+    outputRange: [COLORS.image1, COLORS.image2]
   })
 
   const scale = useRef(new Animated.Value(1.06)).current;
@@ -86,16 +108,16 @@ function App(): React.JSX.Element {
 
   const [data, setData] = useState<DataObject>({})
 
-  const images = {
-    image1: require('./assets/sunrise1.jpg'),
-    image2: require('./assets/sunrise2.jpg'),
-    image3: require('./assets/sunrise3.jpg'),
-    image4: require('./assets/sunrise4.jpg'),
-    image5: require('./assets/sunset1.jpg'),
-    image6: require('./assets/sunset2.jpg'),
-    image7: require('./assets/sunset3.jpg'),
-    image8: require('./assets/sunset4.jpg')
-  }
+  // const images = {
+  //   image1: require('./assets/sunrise1.jpg'),
+  //   image2: require('./assets/sunrise2.jpg'),
+  //   image3: require('./assets/sunrise3.jpg'),
+  //   image4: require('./assets/sunrise4.jpg'),
+  //   image5: require('./assets/sunset1.jpg'),
+  //   image6: require('./assets/sunset2.jpg'),
+  //   image7: require('./assets/sunset3.jpg'),
+  //   image8: require('./assets/sunset4.jpg')
+  // }
 
   const differenceInSeconds = (date1: Date, date2: Date) => {
     const diffInMilliseconds = date2.getTime() - date1.getTime();
@@ -292,9 +314,21 @@ function App(): React.JSX.Element {
         // { backgroundColor: bgInter }
         { backgroundColor: "rgb(230, 237, 246)" }
       ]}>
-        <Animated.View style={{ opacity: opacityInter, position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+        <SkyBackground
+          bg={bg}
+          bgInter={bgInter}
+        // image={images.image4} 
+        />
+        {/* <Animated.View style={{
+          opacity: bg,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%"
+        }}>
           <ImageBackground source={images.image4} style={{ width: "100%", height: "100%" }} />
-        </Animated.View>
+        </Animated.View> */}
         <SafeAreaView style={styles.parent}>
           <ActionBar
             data={data}
@@ -319,6 +353,10 @@ function App(): React.JSX.Element {
               activeRunningShadow={activeRunningShadow}
               scale={scale}
               bgInter={bgInter}
+              pressed={pressed}
+              test={test}
+              nextColor={nextColor}
+              nextColorInter={nextColorInter}
             >
               <Time
                 timeScale={timeScale}
@@ -346,6 +384,11 @@ function App(): React.JSX.Element {
             showList={showList}
             setShowList={setShowList}
           />}
+          <Button title="Test" onPress={() => {
+            console.log("pressed")
+            setTest(true)
+          }
+          } />
         </SafeAreaView>
       </Animated.View>
     </SafeAreaProvider >

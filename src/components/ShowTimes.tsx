@@ -87,7 +87,7 @@ const ShowTimes: React.FC<ShowTimesProps> = ({ data, setShowList, pressed }) => 
         onPress={() => setShowList(true)}
       >
         <Text style={styles.text}>Times</Text>
-        <View style={styles.count}>
+        <View pointerEvents="none" style={styles.count}>
           <Text style={[styles.text, { marginTop: -1, textAlign: "center" }]}>{`${count}`}</Text>
         </View>
       </Pressable>

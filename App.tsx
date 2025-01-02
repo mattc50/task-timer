@@ -109,6 +109,7 @@ function App(): React.JSX.Element {
   const changeColorRef = useRef<NodeJS.Timeout | null>(null);
 
   const changeColor = () => {
+    console.log('changing color')
     setColorChanging(true);
     if (changeColorRef.current) {
       clearTimeout(changeColorRef.current);
@@ -139,8 +140,9 @@ function App(): React.JSX.Element {
         Animated.timing(nextBgOpacity, {
           toValue: 0,
           duration: 0,
+          // delay: 950,
           useNativeDriver: true
-        })
+        }),
       ]),
       Animated.sequence([
         Animated.timing(nextColor, {
@@ -159,9 +161,9 @@ function App(): React.JSX.Element {
     // setFirstIndex(newFirst)
     // setSecondIndex(newSecond)
     // setSecondImage(newSecond)
-    setColorChanging(false)
 
     changeColorRef.current = setTimeout(() => {
+      // setColorChanging(false)
       console.log('changed')
       setFirstIndex(newFirst)
       setSecondIndex(newSecond)
@@ -399,6 +401,7 @@ function App(): React.JSX.Element {
           secondImage={secondImage}
           colorChanging={colorChanging}
           nextBgOpacity={nextBgOpacity}
+          setColorChanging={setColorChanging}
         />
         <SafeAreaView style={styles.parent}>
           <ActionBar

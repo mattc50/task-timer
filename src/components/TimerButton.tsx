@@ -14,25 +14,12 @@ interface TimerButtonProps {
   scale: Animated.Value,
   children: React.JSX.Element,
   pressed: boolean
-  test?: boolean
-  nextColor: Animated.Value
   nextColorInter: any,
   firstIndex: number,
   secondIndex: number,
 }
 
 const RGB = "0, 6, 35";
-
-// const COLORS = {
-//   image1: "rgb(51, 48, 81)",
-//   image2: "rgb(82, 57, 55)",
-//   image3: "rgb(79, 79, 129)",
-//   image4: "rgb(83, 126, 255)",
-//   image5: "rgb(74, 88, 244)",
-//   image6: "rgb(76, 70, 126)",
-//   image7: "rgb(84, 49, 68)",
-//   image8: "rgb(12, 22, 69)",
-// }
 
 const TimerButton: React.FC<TimerButtonProps> = ({
   fadeIn,
@@ -46,8 +33,6 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   scale,
   children,
   pressed,
-  test,
-  nextColor,
   nextColorInter,
   firstIndex,
   secondIndex
@@ -55,26 +40,6 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   const [currentColor, setCurrentColor] = useState<Animated.Value>(bgInter);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // console.log("COlor:", nextColorInter)
-
-  const transitionColor = () => {
-    console.log('transitioning')
-    Animated.timing(nextColor, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true
-    }).start()
-  }
-
-  // useEffect(() => {
-  //   if (test) {
-  //     console.log("effect ran")
-  //     transitionColor();
-  //   }
-  // }, [test])
-  // useEffect(() => {
-  //   console.log('ran')
-  // }, [firstIndex, secondIndex])
   useEffect(() => {
     setCurrentColor(nextColorInter)
   }, [firstIndex, secondIndex])
@@ -85,10 +50,6 @@ const TimerButton: React.FC<TimerButtonProps> = ({
         setCurrentColor(nextColorInter)
       }, 1000)
     } else {
-      // if (colorTimeoutRef.current) {
-      //   clearTimeout(colorTimeoutRef.current);
-      //   colorTimeoutRef.current = null;
-      // }
       setCurrentColor(bgInter)
     }
     return () => {

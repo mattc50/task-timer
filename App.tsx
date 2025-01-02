@@ -87,10 +87,7 @@ function App(): React.JSX.Element {
 
   const nextColor = useRef(new Animated.Value(0)).current;
   const nextColorInter = nextColor.interpolate({
-    // inputRange: [0, 1],
-    // outputRange: [COLORS[firstIndex], COLORS[secondIndex]]
     inputRange: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-    // outputRange: ["rgb(230, 237, 246)", "rgb(234, 197, 191)"]
     outputRange: [
       COLORS[0],
       COLORS[1],
@@ -109,7 +106,6 @@ function App(): React.JSX.Element {
   const changeColorRef = useRef<NodeJS.Timeout | null>(null);
 
   const changeColor = () => {
-    // console.log('changing color')
     setColorChanging(true);
     if (changeColorRef.current) {
       clearTimeout(changeColorRef.current);
@@ -121,16 +117,9 @@ function App(): React.JSX.Element {
       return index + 1;
     }
 
-    // const firstIndex = COLORS.indexOf(firstColor);
-    // const secondIndex = COLORS.indexOf(secondColor);
-
-    // console.log("changing to:", COLORS[secondIndex])
-
     const newFirst = incrementIndex(firstIndex);
     const newFirstForAnimation = firstIndex + 1 === 8 ? firstIndex + 1 : newFirst;
     const newSecond = incrementIndex(secondIndex);
-
-    // console.log(firstIndex, secondIndex, newFirstForAnimation)
 
     Animated.parallel([
       Animated.sequence([
@@ -142,7 +131,6 @@ function App(): React.JSX.Element {
         Animated.timing(nextBgOpacity, {
           toValue: 0,
           duration: 0,
-          // delay: 950,
           useNativeDriver: true
         }),
       ]),
@@ -160,14 +148,7 @@ function App(): React.JSX.Element {
       ])
     ]).start();
 
-    // setFirstIndex(newFirst)
-    // setSecondIndex(newSecond)
-    // setSecondImage(newSecond)
-
     changeColorRef.current = setTimeout(() => {
-      // setColorChanging(false)
-
-      // console.log('changed')
       setFirstIndex(newFirst)
       setSecondIndex(newSecond)
     }, 1000)
@@ -397,11 +378,8 @@ function App(): React.JSX.Element {
       ]}>
         <SkyBackground
           bg={bg}
-          bgInter={bgInter}
-          nextColor={nextColor}
           firstIndex={firstIndex}
           secondIndex={secondIndex}
-          secondImage={secondImage}
           colorChanging={colorChanging}
           nextBgOpacity={nextBgOpacity}
           setColorChanging={setColorChanging}
@@ -431,8 +409,6 @@ function App(): React.JSX.Element {
               scale={scale}
               bgInter={bgInter}
               pressed={pressed}
-              test={test}
-              nextColor={nextColor}
               nextColorInter={nextColorInter}
               firstIndex={firstIndex}
               secondIndex={secondIndex}

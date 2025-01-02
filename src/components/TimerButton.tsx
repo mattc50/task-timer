@@ -16,21 +16,23 @@ interface TimerButtonProps {
   pressed: boolean
   test?: boolean
   nextColor: Animated.Value
-  nextColorInter: any
+  nextColorInter: any,
+  firstIndex: number,
+  secondIndex: number,
 }
 
 const RGB = "0, 6, 35";
 
-const COLORS = {
-  image1: "rgb(51, 48, 81)",
-  image2: "rgb(82, 57, 55)",
-  image3: "rgb(79, 79, 129)",
-  image4: "rgb(83, 126, 255)",
-  image5: "rgb(74, 88, 244)",
-  image6: "rgb(76, 70, 126)",
-  image7: "rgb(84, 49, 68)",
-  image8: "rgb(12, 22, 69)",
-}
+// const COLORS = {
+//   image1: "rgb(51, 48, 81)",
+//   image2: "rgb(82, 57, 55)",
+//   image3: "rgb(79, 79, 129)",
+//   image4: "rgb(83, 126, 255)",
+//   image5: "rgb(74, 88, 244)",
+//   image6: "rgb(76, 70, 126)",
+//   image7: "rgb(84, 49, 68)",
+//   image8: "rgb(12, 22, 69)",
+// }
 
 const TimerButton: React.FC<TimerButtonProps> = ({
   fadeIn,
@@ -46,29 +48,14 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   pressed,
   test,
   nextColor,
-  nextColorInter
+  nextColorInter,
+  firstIndex,
+  secondIndex
 }) => {
   const [currentColor, setCurrentColor] = useState<Animated.Value>(bgInter);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-
-  const timeColor = useRef(new Animated.Value(0)).current;
-  const initialColor = COLORS.image1
-  console.log("COlor:", nextColorInter)
-
-  const timeColorInter = timeColor.interpolate({
-    inputRange: [0, 1],
-    outputRange: [bgInter, COLORS.image2]
-  })
-
-  timeColorInter.addListener(({ value }) => {
-    console.log("Raw value:", value);
-  });
-
-  // const [BACKGROUND, setBackground] = useState<string>(typeof color === 'string' ? color : bgInter)
-
-  // const BACKGROUND = typeof color === 'string' ? color : bgInter;
-  const BACKGROUND = bgInter;
+  // console.log("COlor:", nextColorInter)
 
   const transitionColor = () => {
     console.log('transitioning')
@@ -79,19 +66,23 @@ const TimerButton: React.FC<TimerButtonProps> = ({
     }).start()
   }
 
+  // useEffect(() => {
+  //   if (test) {
+  //     console.log("effect ran")
+  //     transitionColor();
+  //   }
+  // }, [test])
+  // useEffect(() => {
+  //   console.log('ran')
+  // }, [firstIndex, secondIndex])
   useEffect(() => {
-    // setBackground(typeof color === 'string' ? color : bgInter)
-    if (test) {
-      console.log("effect ran")
-      transitionColor();
-    }
-  }, [test])
+    setCurrentColor(nextColorInter)
+  }, [firstIndex, secondIndex])
 
   useEffect(() => {
     if (pressed) {
       colorTimeoutRef.current = setTimeout(() => {
         setCurrentColor(nextColorInter)
-        // setTimeColor("rgb(211, 222, 244)")
       }, 1000)
     } else {
       // if (colorTimeoutRef.current) {

@@ -4,21 +4,26 @@ import { Animated, ImageBackground } from "react-native";
 interface SkyBackgroundProps {
   bg: Animated.Value,
   bgInter: any,
-  test?: boolean
-
+  test?: boolean,
+  nextColor: Animated.Value
+  firstIndex: number,
+  secondIndex: number,
+  secondImage: number,
+  colorChanging: boolean,
+  nextBgOpacity: Animated.Value
   // image: any
 }
 
-const images = {
-  image1: require('../../assets/sunrise1.jpg'),
-  image2: require('../../assets/sunrise2.jpg'),
-  image3: require('../../assets/sunrise3.jpg'),
-  image4: require('../../assets/sunrise4.jpg'),
-  image5: require('../../assets/sunset1.jpg'),
-  image6: require('../../assets/sunset2.jpg'),
-  image7: require('../../assets/sunset3.jpg'),
-  image8: require('../../assets/sunset4.jpg')
-}
+const IMAGES = [
+  require('../../assets/sunrise1.jpg'),
+  require('../../assets/sunrise2.jpg'),
+  require('../../assets/sunrise3.jpg'),
+  require('../../assets/sunrise4.jpg'),
+  require('../../assets/sunset1.jpg'),
+  require('../../assets/sunset2.jpg'),
+  require('../../assets/sunset3.jpg'),
+  require('../../assets/sunset4.jpg')
+]
 
 const COLORS = {
   image1: "rgb(51, 48, 81)",
@@ -34,23 +39,38 @@ const COLORS = {
 const SkyBackground: React.FC<SkyBackgroundProps> = ({
   bg,
   bgInter,
-  test
+  test,
+  nextColor,
+  firstIndex,
+  secondIndex,
+  secondImage,
+  colorChanging,
+  nextBgOpacity
   // image 
 }) => {
+  // console.log(nextColor)
+  useEffect(() => {
+    console.log(nextBgOpacity)
+    // console.log(firstIndex, secondIndex, secondImage, colorChanging)
+  }, [nextBgOpacity])
   const colorRef = useRef(new Animated.Value(0)).current;
 
-  const color = colorRef.interpolate({
-    inputRange: [0, 1],
-    outputRange: [bgInter, COLORS.image2]
-  })
+  const topOpacity = useRef(new Animated.Value(0)).current;
 
-  const transitionColor = () => {
-    Animated.timing(colorRef, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true
-    })
-  }
+  // const color = colorRef.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: [bgInter, COLORS.image2]
+  // })
+
+  // const transitionColor = () => {
+  //   Animated.timing(colorRef, {
+  //     toValue: 1,
+  //     duration: 1000,
+  //     useNativeDriver: true
+  //   })
+  // }
+
+  // console.log(nextColor)
 
   return (
     <Animated.View style={{
@@ -61,7 +81,24 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
       width: "100%",
       height: "100%"
     }}>
-      <ImageBackground source={images.image1} style={{ width: "100%", height: "100%" }} />
+      <Animated.View style={{ zIndex: 2, opacity: nextBgOpacity, width: "100%", height: "100%" }}>
+        <ImageBackground source={IMAGES[secondIndex]} style={{ width: "100%", height: "100%" }} />
+      </Animated.View>
+      {colorChanging && <ImageBackground
+        source={IMAGES[secondIndex]}
+        style={{
+          // backgroundColor: "red",
+          zIndex: 1,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%"
+        }} />}
+      <ImageBackground source={IMAGES[firstIndex]} style={{
+        position: "absolute", top: 0, left: 0,
+        width: "100%", height: "100%"
+      }} />
     </Animated.View>
   )
 }

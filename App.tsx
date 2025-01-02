@@ -41,25 +41,21 @@ type DataObject = {
   [key: string]: Object[]; // Date keys with arrays of objects
 };
 
-const COLORS = {
-  image1: "rgb(51, 48, 81)",
-  image2: "rgb(82, 57, 55)",
-  image3: "rgb(79, 79, 129)",
-  image4: "rgb(83, 126, 255)",
-  image5: "rgb(74, 88, 244)",
-  image6: "rgb(76, 70, 126)",
-  image7: "rgb(84, 49, 68)",
-  image8: "rgb(12, 22, 69)",
-}
+const COLORS = [
+  "rgb(51, 48, 81)",
+  "rgb(82, 57, 55)",
+  "rgb(79, 79, 129)",
+  "rgb(83, 126, 255)",
+  "rgb(74, 87, 204)",
+  "rgb(76, 70, 126)",
+  "rgb(84, 49, 68)",
+  "rgb(12, 22, 69)",
+  // "rgb(51, 48, 81)",
+]
 const NATIVE_DRIVER = true;
 
 function App(): React.JSX.Element {
   const [test, setTest] = useState<boolean>(false);
-  // const buttonColor = useRef(new Animated.Value(0)).current;
-  // const buttonColorInter = buttonColor.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: [bgInter, COLORS.image2]
-  // })
 
   const [held, setHeld] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -69,14 +65,20 @@ function App(): React.JSX.Element {
   const activeRunningShadow = useRef(new Animated.Value(0)).current;
   const runningShadow = useRef(new Animated.Value(0)).current;
 
+  const [firstIndex, setFirstIndex] = useState<number>(0);
+  const [secondIndex, setSecondIndex] = useState<number>(1);
+  const [secondImage, setSecondImage] = useState<number>(1);
+  const [colorChanging, setColorChanging] = useState<boolean>(false);
+  const [nextFirst, setNextFirst] = useState<number>(1);
+  const [nextSecond, setNextSecond] = useState<number>(2);
+
   const bg = useRef(new Animated.Value(0)).current;
   const bgInter = bg.interpolate({
     inputRange: [0, 1],
     // outputRange: ["rgb(230, 237, 246)", "rgb(234, 197, 191)"]
-    outputRange: ["rgb(230, 237, 246)", COLORS.image1]
+    outputRange: ["rgb(230, 237, 246)", COLORS[firstIndex]]
     // outputRange: [0, 0.25]
   })
-  // const transitionBgInter =
 
   // const opacityInter = bg.interpolate({
   //   inputRange: [0, 1],
@@ -85,9 +87,86 @@ function App(): React.JSX.Element {
 
   const nextColor = useRef(new Animated.Value(0)).current;
   const nextColorInter = nextColor.interpolate({
-    inputRange: [0, 1],
-    outputRange: [COLORS.image1, COLORS.image2]
+    // inputRange: [0, 1],
+    // outputRange: [COLORS[firstIndex], COLORS[secondIndex]]
+    inputRange: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    // outputRange: ["rgb(230, 237, 246)", "rgb(234, 197, 191)"]
+    outputRange: [
+      COLORS[0],
+      COLORS[1],
+      COLORS[2],
+      COLORS[3],
+      COLORS[4],
+      COLORS[5],
+      COLORS[6],
+      COLORS[7],
+      COLORS[0],
+    ]
   })
+
+  const nextBgOpacity = useRef(new Animated.Value(0)).current;
+
+  const changeColorRef = useRef<NodeJS.Timeout | null>(null);
+
+  const changeColor = () => {
+    setColorChanging(true);
+    if (changeColorRef.current) {
+      clearTimeout(changeColorRef.current);
+    }
+    const incrementIndex = (index: number) => {
+      if (index + 1 === 8) {
+        return 0;
+      }
+      return index + 1;
+    }
+
+    // const firstIndex = COLORS.indexOf(firstColor);
+    // const secondIndex = COLORS.indexOf(secondColor);
+    console.log("changing to:", COLORS[secondIndex])
+
+    const newFirst = incrementIndex(firstIndex);
+    const newFirstForAnimation = firstIndex + 1 === 8 ? firstIndex + 1 : newFirst;
+    const newSecond = incrementIndex(secondIndex);
+
+    console.log(firstIndex, secondIndex, newFirstForAnimation)
+    Animated.parallel([
+      Animated.sequence([
+        Animated.timing(nextBgOpacity, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true
+        }),
+        Animated.timing(nextBgOpacity, {
+          toValue: 0,
+          duration: 0,
+          useNativeDriver: true
+        })
+      ]),
+      Animated.sequence([
+        Animated.timing(nextColor, {
+          toValue: newFirstForAnimation,
+          duration: 1000,
+          useNativeDriver: true
+        }),
+        Animated.timing(nextColor, {
+          toValue: newFirstForAnimation === 8 ? 0 : newFirst,
+          duration: 0,
+          useNativeDriver: true
+        })
+      ])
+    ]).start();
+
+    // setFirstIndex(newFirst)
+    // setSecondIndex(newSecond)
+    // setSecondImage(newSecond)
+    setColorChanging(false)
+
+    changeColorRef.current = setTimeout(() => {
+      console.log('changed')
+      setFirstIndex(newFirst)
+      setSecondIndex(newSecond)
+    }, 1000)
+  }
 
   const scale = useRef(new Animated.Value(1.06)).current;
 
@@ -108,20 +187,9 @@ function App(): React.JSX.Element {
 
   const [data, setData] = useState<DataObject>({})
 
-  // const images = {
-  //   image1: require('./assets/sunrise1.jpg'),
-  //   image2: require('./assets/sunrise2.jpg'),
-  //   image3: require('./assets/sunrise3.jpg'),
-  //   image4: require('./assets/sunrise4.jpg'),
-  //   image5: require('./assets/sunset1.jpg'),
-  //   image6: require('./assets/sunset2.jpg'),
-  //   image7: require('./assets/sunset3.jpg'),
-  //   image8: require('./assets/sunset4.jpg')
-  // }
-
   const differenceInSeconds = (date1: Date, date2: Date) => {
     const diffInMilliseconds = date2.getTime() - date1.getTime();
-    console.log(diffInMilliseconds)
+    // console.log(diffInMilliseconds)
     return Math.floor(diffInMilliseconds);
   }
 
@@ -142,7 +210,7 @@ function App(): React.JSX.Element {
           BackgroundTimer.runBackgroundTimer(() => {
             const now = new Date(Date.now());
             const elapsedSeconds = differenceInSeconds(new Date(Date.parse(startTime)), now);
-            console.log(elapsedSeconds)
+            // console.log(elapsedSeconds)
             setTime(elapsedSeconds);
           }, 100);
         }
@@ -175,6 +243,14 @@ function App(): React.JSX.Element {
       if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
   }, [pressed]);
+
+  useEffect(() => {
+    return () => {
+      if (changeColorRef.current) {
+        clearTimeout(changeColorRef.current);
+      }
+    };
+  }, []); // Runs once, ensures cleanup on component unmount
 
   const handleStop = async () => {
     setPressed(false);
@@ -317,18 +393,13 @@ function App(): React.JSX.Element {
         <SkyBackground
           bg={bg}
           bgInter={bgInter}
-        // image={images.image4} 
+          nextColor={nextColor}
+          firstIndex={firstIndex}
+          secondIndex={secondIndex}
+          secondImage={secondImage}
+          colorChanging={colorChanging}
+          nextBgOpacity={nextBgOpacity}
         />
-        {/* <Animated.View style={{
-          opacity: bg,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%"
-        }}>
-          <ImageBackground source={images.image4} style={{ width: "100%", height: "100%" }} />
-        </Animated.View> */}
         <SafeAreaView style={styles.parent}>
           <ActionBar
             data={data}
@@ -357,6 +428,8 @@ function App(): React.JSX.Element {
               test={test}
               nextColor={nextColor}
               nextColorInter={nextColorInter}
+              firstIndex={firstIndex}
+              secondIndex={secondIndex}
             >
               <Time
                 timeScale={timeScale}
@@ -386,12 +459,13 @@ function App(): React.JSX.Element {
           />}
           <Button title="Test" onPress={() => {
             console.log("pressed")
-            setTest(true)
+            // setTest(true)
+            changeColor();
           }
           } />
         </SafeAreaView>
       </Animated.View>
-    </SafeAreaProvider >
+    </SafeAreaProvider>
   )
 }
 

@@ -53,7 +53,7 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
   console.log(colorChanging)
   // useEffect(() => {
   //   console.log("colorChanging:", colorChanging)
-  //   // console.log(firstIndex, secondIndex, secondImage, colorChanging)
+  //   console.log(firstIndex, secondIndex, secondImage, colorChanging)
   // }, [colorChanging])
 
   const [firstImage, setFirstImage] = useState<any>(IMAGES[firstIndex])
@@ -86,7 +86,7 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
   //   console.log("colorchanging:", colorChanging)
   //   if (colorChanging) {
   //     setNextOpacity(0)
-  //     // console.log('changed bg')
+  //     console.log('changed bg')
   //     if (posTimeoutRef.current) {
   //       clearTimeout(posTimeoutRef.current);
   //       posTimeoutRef.current = null;
@@ -104,7 +104,7 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
   // }, [colorChanging])
 
   useEffect(() => {
-    console.log("colorchanging:", colorChanging);
+    // console.log("colorchanging:", colorChanging);
 
     if (colorChanging) {
       setSecondImage(IMAGES[secondIndex])
@@ -144,14 +144,14 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
       }, 900);
 
       posTimeoutRef.current = setTimeout(() => {
-        // setZIndex(2)
-        console.log('changing opacity;', nextOpacity); // Stale closure issue here
+        setZIndex(2)
+        // console.log('changing opacity;', nextOpacity); // Stale closure issue here
         setNextOpacity(1);
         setColorChanging(false)
       }, 1000);
 
       return () => {
-        console.log('Cleanup: clearing timeout');
+        // console.log('Cleanup: clearing timeout');
         if (posTimeoutRef.current) {
           clearTimeout(posTimeoutRef.current);
         }
@@ -189,7 +189,7 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
 
       {/* this is the background image */}
       <Animated.Image source={secondImage} style={{
-        zIndex: 2, opacity: topOpacity, position: "absolute", top: 0, left: 0,
+        zIndex: zIndex, opacity: topOpacity, position: "absolute", top: 0, left: 0,
         width: "100%", height: "100%"
       }} />
 

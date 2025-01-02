@@ -109,7 +109,7 @@ function App(): React.JSX.Element {
   const changeColorRef = useRef<NodeJS.Timeout | null>(null);
 
   const changeColor = () => {
-    console.log('changing color')
+    // console.log('changing color')
     setColorChanging(true);
     if (changeColorRef.current) {
       clearTimeout(changeColorRef.current);
@@ -123,13 +123,15 @@ function App(): React.JSX.Element {
 
     // const firstIndex = COLORS.indexOf(firstColor);
     // const secondIndex = COLORS.indexOf(secondColor);
-    console.log("changing to:", COLORS[secondIndex])
+
+    // console.log("changing to:", COLORS[secondIndex])
 
     const newFirst = incrementIndex(firstIndex);
     const newFirstForAnimation = firstIndex + 1 === 8 ? firstIndex + 1 : newFirst;
     const newSecond = incrementIndex(secondIndex);
 
-    console.log(firstIndex, secondIndex, newFirstForAnimation)
+    // console.log(firstIndex, secondIndex, newFirstForAnimation)
+
     Animated.parallel([
       Animated.sequence([
         Animated.timing(nextBgOpacity, {
@@ -164,7 +166,8 @@ function App(): React.JSX.Element {
 
     changeColorRef.current = setTimeout(() => {
       // setColorChanging(false)
-      console.log('changed')
+
+      // console.log('changed')
       setFirstIndex(newFirst)
       setSecondIndex(newSecond)
     }, 1000)
@@ -265,12 +268,12 @@ function App(): React.JSX.Element {
       Animated.timing(timeOpacity, {
         toValue: held ? 0.6 : 0.5,
         duration: DURATION,
-        useNativeDriver: NATIVE_DRIVER,
+        useNativeDriver: false,
       }),
       Animated.timing(timeScale, {
         toValue: held ? 1 : pressed ? 0.985 : 0.99,
         duration: DURATION,
-        useNativeDriver: NATIVE_DRIVER,
+        useNativeDriver: false,
       })
     ]).start();
   }

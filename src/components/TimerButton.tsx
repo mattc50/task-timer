@@ -52,14 +52,14 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   //   setCurrentColor(bgInter)
   // }, [])
 
-  useEffect(() => {
-    // if (colorChanging) {
-    // console.log('currentColor:', currentColor)
-    // setCurrentColor(pressed ? nextColorInter : bgInter)
-    console.log(bgInter)
-    // setCurrentColor(bgInter)
-    // }
-  }, [])
+  // useEffect(() => {
+  //   if (colorChanging) {
+  //   console.log('currentColor:', currentColor)
+  //   setCurrentColor(pressed ? nextColorInter : bgInter)
+  //   console.log(bgInter)
+  //   setCurrentColor(bgInter)
+  //   }
+  // }, [])
 
   useEffect(() => {
     setCurrentColor(bgInter)
@@ -72,7 +72,7 @@ const TimerButton: React.FC<TimerButtonProps> = ({
       // }
       // setCurrentColor(nextColorInter)
       if (colorChanging) {
-        console.log('ran')
+        // console.log('ran')
         setCurrentColor(nextColorInter);
         colorTimeoutRef.current = setTimeout(() => {
           setCurrentColor(nextColorInter)

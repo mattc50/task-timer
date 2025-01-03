@@ -70,7 +70,6 @@ function App(): React.JSX.Element {
 
   const [firstIndex, setFirstIndex] = useState<number>(0);
   const [secondIndex, setSecondIndex] = useState<number>(1);
-  // console.log(firstIndex, secondIndex)
 
   const nextColor = useRef(new Animated.Value(0)).current;
   const nextColorInter = nextColor.interpolate({
@@ -93,8 +92,10 @@ function App(): React.JSX.Element {
    */
   const checkTime = () => {
     // const timeNow = dateNow.getTime();
+    const timeNow = new Date(Date.now()).getTime();
+
     // const timeNow = 1735848897681;
-    const timeNow = 1735952654470;
+    // const timeNow = 1735952654470;
 
     // console.log(timeNow)
     // console.log(Object.values(sunTimes.times))
@@ -104,16 +105,16 @@ function App(): React.JSX.Element {
     if (sunTimes?.times) {
       const vals: number[] = Object.values(sunTimes.times);
       const keys: string[] = Object.keys(sunTimes.times);
-      let currZone: string;
+      let currZone: string = "";
       for (let i = 0; i < vals.length - 1; i++) {
         // console.log(`${timeNow - vals[i]} ${vals[i + 1] - timeNow}`)
         // console.log(`${vals[i] <= timeNow}, ${timeNow <= vals[i + 1]}`)
         if (vals[i] <= timeNow && timeNow <= vals[i + 1]) {
-          console.log(`right now, we are in ${keys[i]} (${vals[i]})`)
+          // console.log(`right now, we are in ${keys[i]} (${vals[i]})`)
           currZone = Object.keys(sunTimes.times)[i];
         }
         if (!currZone) {
-          console.log(`right now, we are in ${keys[vals.length - 1]} (${vals[vals.length - 1]})`)
+          // console.log(`right now, we are in ${keys[vals.length - 1]} (${vals[vals.length - 1]})`)
           currZone = Object.keys(sunTimes.times)[vals.length - 1];
         }
       }
@@ -164,7 +165,6 @@ function App(): React.JSX.Element {
         zoneIndex = 7;
       }
 
-      nextColor.setValue(zoneIndex);
       return zoneIndex;
     }
   }
@@ -192,14 +192,17 @@ function App(): React.JSX.Element {
   const changeColorRef = useRef<NodeJS.Timeout | null>(null);
 
   const incrementIndex = (index: number) => {
+    // console.log('incrementing')
+
     if (index + 1 === 8) {
       return 0;
     }
     return index + 1;
   }
 
-  const changeColor = () => {
+  const changeColor = (firstIndex: number, secondIndex: number) => {
     setColorChanging(true);
+    console.log(`first: ${firstIndex}, second: ${secondIndex}`)
     if (changeColorRef.current) {
       clearTimeout(changeColorRef.current);
     }
@@ -207,6 +210,8 @@ function App(): React.JSX.Element {
     const newFirst = incrementIndex(firstIndex);
     const newFirstForAnimation = firstIndex + 1 === 8 ? firstIndex + 1 : newFirst;
     const newSecond = incrementIndex(secondIndex);
+
+    console.log(`newfirst: ${newFirst}, newsecond: ${newSecond}, newforanim: ${newFirstForAnimation}`)
 
     Animated.parallel([
       Animated.sequence([
@@ -238,7 +243,9 @@ function App(): React.JSX.Element {
     changeColorRef.current = setTimeout(() => {
       // setColorChanging(false)
       setFirstIndex(newFirst)
+      firstIndexRef.current = newFirst;
       setSecondIndex(newSecond)
+      secondIndexRef.current = newSecond;
     }, 1000)
   }
 
@@ -272,6 +279,13 @@ function App(): React.JSX.Element {
     await AsyncStorage.setItem('start_time', currentTime.toISOString());
   };
 
+  const timeTicker = useRef<number | null>();
+
+  const hourChecker = useRef<number | null>();
+  const firstIndexRef = useRef<number>(0);
+  const secondIndexRef = useRef<number>(1);
+  const pressedRef = useRef<boolean>(false);
+
   useEffect(() => {
     // const os = Platform.OS;
 
@@ -281,12 +295,14 @@ function App(): React.JSX.Element {
       const fetchStartTime = async () => {
         const startTime = await AsyncStorage.getItem('start_time');
         if (startTime) {
-          BackgroundTimer.runBackgroundTimer(() => {
-            const now = new Date(Date.now());
-            const elapsedSeconds = differenceInSeconds(new Date(Date.parse(startTime)), now);
-            // console.log(elapsedSeconds)
-            setTime(elapsedSeconds);
-          }, 100);
+          if (!timeTicker.current) {
+            timeTicker.current = BackgroundTimer.setInterval(() => {
+              const now = new Date(Date.now());
+              const elapsedSeconds = differenceInSeconds(new Date(Date.parse(startTime)), now);
+              // console.log(elapsedSeconds)
+              setTime(elapsedSeconds);
+            }, 100);
+          }
         }
       };
 
@@ -299,7 +315,11 @@ function App(): React.JSX.Element {
         timerTimeoutRef.current = null;
       }
     } else {
-      BackgroundTimer.stopBackgroundTimer();
+      // BackgroundTimer.stopBackgroundTimer();
+      if (timeTicker.current) {
+        BackgroundTimer.clearInterval(timeTicker.current);
+        timeTicker.current = null;
+      }
 
       if (time > 0) {
         setToastDisplay(true);
@@ -313,13 +333,17 @@ function App(): React.JSX.Element {
       }
     }
     return () => {
-      BackgroundTimer.stopBackgroundTimer();
+      // BackgroundTimer.stopBackgroundTimer();
+      if (timeTicker.current) {
+        BackgroundTimer.clearInterval(timeTicker.current);
+        timeTicker.current = null;
+      }
       if (timerTimeoutRef.current) clearTimeout(timerTimeoutRef.current);
     }
   }, [pressed]);
 
-  useEffect(() => {
-  }, [firstIndex, secondIndex])
+  // useEffect(() => {
+  // }, [firstIndex, secondIndex])
 
   useEffect(() => {
     return () => {
@@ -348,7 +372,7 @@ function App(): React.JSX.Element {
       // Step 3: Reconstruct the object (if needed)
       const sortedTimeObject = Object.fromEntries(entriesWithTimestamps);
 
-      console.log(sortedTimeObject);
+      // console.log(sortedTimeObject);
 
       // const sanitizeTimes = () => {
       //   if (locationTimes?.times) {
@@ -378,13 +402,47 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     if (sunTimes) {
-      // console.log('ran')
-      const time: number = checkTime();
-      console.log(`setting index to ${time}`)
-      setFirstIndex(time);
-      setSecondIndex(incrementIndex(time));
+      const time: number | undefined = checkTime();
+      // console.log(`setting index to ${time}`)
+      if (time !== undefined) {
+        nextColor.setValue(time);
+        setFirstIndex(time);
+        setSecondIndex(incrementIndex(time));
+      }
+      firstIndexRef.current = firstIndex; // Update ref with the latest value
+      secondIndexRef.current = incrementIndex(firstIndex);
+      pressedRef.current = pressed;
+
+      if (!hourChecker.current) {
+        hourChecker.current = BackgroundTimer.setInterval(() => {
+          const time: number | undefined = checkTime();
+          // console.log(pressed)
+          // console.log('checking')
+          const pressed = pressedRef.current;
+          const first = firstIndexRef.current;
+          const second = secondIndexRef.current;
+          if (pressed
+            && time !== undefined && (firstIndex < time || (firstIndex === 7 && time === 0))
+          ) {
+            // console.log("checking hour")
+            if (firstIndex < time || (firstIndex === 7 && time === 0)) {
+              changeColor(first, second);
+            }
+            // changeColor(first, second);
+          }
+        },
+          // 5000 // for testing
+          60000
+        );
+      }
     }
-  }, [sunTimes])
+    return () => {
+      if (!pressed && hourChecker.current) {
+        BackgroundTimer.clearInterval(hourChecker.current);
+        hourChecker.current = null;
+      }
+    }
+  }, [sunTimes, pressed])
 
   const handleStop = async () => {
     setPressed(false);
@@ -599,12 +657,12 @@ function App(): React.JSX.Element {
             showList={showList}
             setShowList={setShowList}
           />}
-          <Button title="Test" onPress={() => {
+          {/* <Button title="Test" onPress={() => {
             console.log("pressed")
             // setTest(true)
             changeColor();
           }
-          } />
+          } /> */}
         </SafeAreaView>
       </Animated.View>
     </SafeAreaProvider>

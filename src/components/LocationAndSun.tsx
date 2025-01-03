@@ -12,7 +12,7 @@ export const getLocation = async () => {
 
   // if (!hasPermission) {
   if (permission !== 'granted' && permission !== 'restricted') {
-    Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
+    // Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
     return;
   }
 

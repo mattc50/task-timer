@@ -89,6 +89,11 @@ const SkyBackground: React.FC<SkyBackgroundProps> = ({
     }
   }, [colorChanging]);
 
+  useEffect(() => {
+    setFirstImage(IMAGES[firstIndex]);
+    setSecondImage(IMAGES[firstIndex]);
+  }, [firstIndex, secondIndex])
+
   return (
     <Animated.View style={{
       opacity: bg,

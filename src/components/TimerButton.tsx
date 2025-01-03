@@ -17,6 +17,7 @@ interface TimerButtonProps {
   nextColorInter: any,
   firstIndex: number,
   secondIndex: number,
+  colorChanging: boolean
 }
 
 const RGB = "0, 6, 35";
@@ -35,27 +36,62 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   pressed,
   nextColorInter,
   firstIndex,
-  secondIndex
+  secondIndex,
+  colorChanging
 }) => {
   const [currentColor, setCurrentColor] = useState<Animated.Value>(bgInter);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    setCurrentColor(nextColorInter)
-  }, [firstIndex, secondIndex])
+  // console.log(nextColorInter)
+
+
+
+  // useEffect(() => {
+  //   // console.log('currentColor:', currentColor)
+  //   // setCurrentColor(pressed ? nextColorInter : bgInter)
+  //   setCurrentColor(bgInter)
+  // }, [])
 
   useEffect(() => {
+    // if (colorChanging) {
+    // console.log('currentColor:', currentColor)
+    // setCurrentColor(pressed ? nextColorInter : bgInter)
+    console.log(bgInter)
+    // setCurrentColor(bgInter)
+    // }
+  }, [])
+
+  useEffect(() => {
+    setCurrentColor(bgInter)
     if (pressed) {
-      colorTimeoutRef.current = setTimeout(() => {
-        setCurrentColor(nextColorInter)
-      }, 1000)
-    } else {
+      // if (colorChanging) {
+      //   // colorTimeoutRef.current = setTimeout(() => {
+      //   //   setCurrentColor(nextColorInter)
+      //   // }, 1000)
+      //   setCurrentColor(nextColorInter)
+      // }
+      // setCurrentColor(nextColorInter)
+      if (colorChanging) {
+        console.log('ran')
+        setCurrentColor(nextColorInter);
+        colorTimeoutRef.current = setTimeout(() => {
+          setCurrentColor(nextColorInter)
+        }, 1000)
+      }
+    }
+    else {
       setCurrentColor(bgInter)
     }
     return () => {
       if (colorTimeoutRef.current) clearTimeout(colorTimeoutRef.current);
     }
-  }, [pressed])
+  }, [pressed, colorChanging])
+
+  // useEffect(() => {
+  //   colorTimeoutRef.current = setTimeout(() => {
+  //     setCurrentColor(colorChanging ? bgInter : nextColorInter)
+  //   }, 1000)
+  // }, [colorChanging])
 
   return (
     <TouchableOpacity

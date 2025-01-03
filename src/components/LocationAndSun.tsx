@@ -3,6 +3,50 @@ import { View, Text, Button, PermissionsAndroid, Platform, Alert } from 'react-n
 import Geolocation from 'react-native-geolocation-service';
 import SunCalc from 'suncalc';
 
+export const getLocation = async () => {
+  // let location: any;
+  // console.log("hello")
+
+  const permission = await Geolocation.requestAuthorization("whenInUse");
+  // const hasPermission = await hasLocationPermission();
+
+  // if (!hasPermission) {
+  if (permission !== 'granted' && permission !== 'restricted') {
+    Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
+    return;
+  }
+
+  const locate = async (): Promise<Geolocation.GeoPosition | undefined> => {
+    return new Promise((resolve, reject) => {
+      Geolocation.getCurrentPosition(
+        (position: Geolocation.GeoPosition) => {
+          resolve(position); // Resolve the Promise with the position
+        },
+        (error) => {
+          Alert.alert('Error', `Code ${error.code}: ${error.message}`);
+          reject(error); // Reject the Promise with the error
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    });
+  };
+
+  const location: any = await locate();
+
+  // console.log(location)
+
+  var times;
+  if (location) {
+    times = SunCalc.getTimes(new Date(), location.coords.latitude, location.coords.longitude);
+    // console.log(times);
+  }
+  // console.log(new Date(Date.now()).toISOString());
+
+  // console.log(new Date(Date.now()).getTime());
+  // if (times) console.log(new Date(times.dawn).getTime())
+  return { location: location, times: times };
+};
+
 const LocationAndSun = () => {
   const [location, setLocation] = useState<Geolocation.GeoPosition | null>(null);
 
@@ -23,47 +67,23 @@ const LocationAndSun = () => {
     }
   };
 
-  const getLocation = async () => {
-    // let location;
-    console.log("hello")
+  const setStateLocation = async () => {
 
-    const permission = await Geolocation.requestAuthorization("whenInUse");
-    // const hasPermission = await hasLocationPermission();
-
-    // if (!hasPermission) {
-    if (permission !== 'granted' && permission !== 'restricted') {
-      Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
-      return;
+    const result = await getLocation();
+    if (result) {
+      setLocation(result.location);
+      // console.log(result.times)
     }
-
-    Geolocation.getCurrentPosition(
-      (position: Geolocation.GeoPosition) => {
-        // location = position;
-        setLocation(position);
-      },
-      (error) => {
-        Alert.alert('Error', `Code ${error.code}: ${error.message}`);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-
-    var times;
-    if (location) {
-      times = SunCalc.getTimes(new Date(), location.coords.latitude, location.coords.longitude);
-      console.log(times);
-    }
-    console.log(new Date(Date.now()).toISOString());
-
-  };
+  }
 
   return (
     <View>
-      <Button title="Get Location" onPress={getLocation} />
-      {/* {location && (
-        <Text>
+      <Button title="Get Location" onPress={setStateLocation} />
+      {location && (
+        <Text style={{ position: "absolute", top: 100, left: -100 }}>
           Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
         </Text>
-      )} */}
+      )}
     </View>
   );
 };
